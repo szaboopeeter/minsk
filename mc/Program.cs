@@ -28,7 +28,13 @@ namespace mc
 
                 Console.ForegroundColor = color;
 
-                if (parser.Diagnostics.Any())
+                if (!parser.Diagnostics.Any())
+                {
+                    var e = new Evaluator(syntaxTree.Root);
+                    var result = e.Evaluate();
+                    Console.WriteLine(result);
+                }
+                else
                 {
                     Console.ForegroundColor = ConsoleColor.DarkRed;
 
@@ -160,7 +166,10 @@ namespace mc
                 var lenght = _position - start;
                 var text = _text.Substring(start, lenght);
 
-                int.TryParse(text, out var value);
+                if (!int.TryParse(text, out var value))
+                {
+                    _diagnostics.Add($"The number {_text} isn't valid Int32");
+                }
 
                 return new SyntaxToken(SyntaxKind.NumberToken, start, text, value);
             }
@@ -347,7 +356,9 @@ namespace mc
             var left = ParsePrimaryExpression();
 
             while (Current.Kind == SyntaxKind.PlusToken ||
-                   Current.Kind == SyntaxKind.MinusToken)
+                   Current.Kind == SyntaxKind.MinusToken ||
+                   Current.Kind == SyntaxKind.StarToken ||
+                   Current.Kind == SyntaxKind.SlashToken)
             {
                 var operatorToken = NextToken();
                 var right = ParsePrimaryExpression();
@@ -362,6 +373,60 @@ namespace mc
         {
             var numberToken = Match(SyntaxKind.NumberToken);
             return new NumberExpressionSyntax(numberToken);
+        }
+    }
+
+    class Evaluator
+    {
+        private readonly ExpressionSyntax _root;
+        public Evaluator(ExpressionSyntax root)
+        {
+            _root = root;
+        }
+
+        public int Evaluate()
+        {
+            return EvaluateExpression(_root);
+        }
+
+        private int EvaluateExpression(ExpressionSyntax node)
+        {
+            // Binary expression
+            // Number expression
+
+            if (node is NumberExpressionSyntax n)
+            {
+                return (int)n.NumberToken.Value;
+            }
+
+            if (node is BinaryExpressionSyntax b)
+            {
+                var left = EvaluateExpression(b.Left);
+                var right = EvaluateExpression(b.Right);
+
+                if (b.OperatorToken.Kind == SyntaxKind.PlusToken)
+                {
+                    return left + right;
+                }
+                else if (b.OperatorToken.Kind == SyntaxKind.MinusToken)
+                {
+                    return left - right;
+                }
+                else if (b.OperatorToken.Kind == SyntaxKind.StarToken)
+                {
+                    return left * right;
+                }
+                else if (b.OperatorToken.Kind == SyntaxKind.SlashToken)
+                {
+                    return left / right;
+                }
+                else
+                {
+                    throw new Exception($"Unexpected binary opertator {b.OperatorToken.Kind}");
+                }
+            }
+
+            throw new Exception($"Unexpected node {node.Kind}");
         }
     }
 }
