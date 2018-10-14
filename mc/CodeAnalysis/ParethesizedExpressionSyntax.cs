@@ -2,7 +2,7 @@
 
 namespace Minsk.CodeAnalysis
 {
-    sealed class ParethesizedExpressionSyntax : ExpressionSyntax
+    public sealed class ParethesizedExpressionSyntax : ExpressionSyntax
     {
         public ParethesizedExpressionSyntax(SyntaxToken openParenthesisToken, ExpressionSyntax expression, SyntaxToken closeParenthesisToken)
         {
