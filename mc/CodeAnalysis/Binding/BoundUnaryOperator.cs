@@ -10,7 +10,7 @@ namespace Minsk.CodeAnalysis.Binding
             SyntaxKind = syntaxKind;
             Kind = kind;
             OperandType = operandType;
-            ResultType = resultType;
+            Type = resultType;
         }
 
         private BoundUnaryOperator(SyntaxKind syntaxKind, BoundUnaryOperatorKind kind, Type operandType) : this(syntaxKind, kind, operandType, operandType)
@@ -20,7 +20,7 @@ namespace Minsk.CodeAnalysis.Binding
         public SyntaxKind SyntaxKind { get; }
         public BoundUnaryOperatorKind Kind { get; }
         public Type OperandType { get; }
-        public Type ResultType { get; }
+        public Type Type { get; }
 
         private static BoundUnaryOperator[] _operators = {
             new BoundUnaryOperator(SyntaxKind.BangToken, BoundUnaryOperatorKind.LogicalNegation, typeof(bool)),
