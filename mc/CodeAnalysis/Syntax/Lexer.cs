@@ -73,6 +73,21 @@ namespace Minsk.CodeAnalysis.Syntax
                 return new SyntaxToken(SyntaxKind.WhiteSpaceToken, start, text, null);
             }
 
+            if (char.IsLetter(Current))
+            {
+                var start = _position;
+                while (char.IsLetter(Current))
+                {
+                    Next();
+                }
+
+                var lenght = _position - start;
+                var text = _text.Substring(start, lenght);
+                var kind = SyntaxFacts.GetKeywordKind(text);
+
+                return new SyntaxToken(kind, start, text, null);
+            }
+
             switch (Current)
             {
                 case '+':
@@ -80,13 +95,13 @@ namespace Minsk.CodeAnalysis.Syntax
                 case '-':
                     return new SyntaxToken(SyntaxKind.MinusToken, _position++, "-", null);
                 case '*':
-                    return new SyntaxToken(SyntaxKind.StarToken, _position++, "-", null);
+                    return new SyntaxToken(SyntaxKind.StarToken, _position++, "*", null);
                 case '/':
-                    return new SyntaxToken(SyntaxKind.SlashToken, _position++, "-", null);
+                    return new SyntaxToken(SyntaxKind.SlashToken, _position++, "/", null);
                 case '(':
-                    return new SyntaxToken(SyntaxKind.OpenParenthesisToken, _position++, "-", null);
+                    return new SyntaxToken(SyntaxKind.OpenParenthesisToken, _position++, "(", null);
                 case ')':
-                    return new SyntaxToken(SyntaxKind.CloseParenthesisToken, _position++, "-", null);
+                    return new SyntaxToken(SyntaxKind.CloseParenthesisToken, _position++, ")", null);
             }
 
             _diagnostics.Add($"ERROR: bad character input: '{Current}'");
