@@ -1,6 +1,6 @@
 ﻿namespace Minsk.CodeAnalysis.Binding
 {
-    internal enum BoundBiaryOperatorKind
+    internal enum BoundBinaryOperatorKind
     {
         Addition,
         Subtraction,
