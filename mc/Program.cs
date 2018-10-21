@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using Minsk.CodeAnalysis.Binding;
 using Minsk.CodeAnalysis;
 using Minsk.CodeAnalysis.Syntax;
@@ -86,7 +85,7 @@ namespace Minsk
 
             Console.WriteLine();
 
-            indent += isLast ? "    " : "│   ";
+            indent += isLast ? "    " : "│  ";
 
 
             var lastChild = node.GetChildren().LastOrDefault();
