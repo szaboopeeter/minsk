@@ -10,4 +10,8 @@
     <Folder Include="CodeAnalysis\Syntax\" />
     <Folder Include="CodeAnalysis\Binding\" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Minsk\Minsk.csproj" />
+  </ItemGroup>
 </Project>
