@@ -27,7 +27,7 @@ namespace Minsk.CodeAnalysis.Syntax
                 return '\0';
             }
 
-            return _text[_position];
+            return _text[index];
         }
 
         private void Next()
@@ -123,7 +123,11 @@ namespace Minsk.CodeAnalysis.Syntax
                         _position += 2;
                         return new SyntaxToken(SyntaxKind.EqualsEqualsToken, start, "==", null);
                     }
-                    break;
+                    else
+                    {
+                        _position += 1;
+                        return new SyntaxToken(SyntaxKind.EqualsToken, start, "=", null);
+                    }
                 case '!':
                     if (LookAhead == '=')
                     {
