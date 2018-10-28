@@ -2,18 +2,11 @@
 
 > Have you considered Minsk? -- Worf, naming things.
 
-This repo contains **Minsk**, a handwritten compiler in C#. It illustrates basic
-concepts of compiler construction and how one can tool the language inside of an
-IDE by exposing APIs for parsing and type checking.
+Refer to Immo Landwerth's [github repo] and his [Youtube playlist].
 
-This compiler uses many of the concepts that you can find in the Microsoft
-C# and Visual Basic compilers, code named [Roslyn].
+[github repo]: https://github.com/dotnet/roslyn
+[YouTube playlist]: https://www.youtube.com/playlist?list=PLRAdsfhKI4OWNOSfS7EUu5GRAVmze1t2y
 
-[Roslyn]: https://github.com/dotnet/roslyn
+## Build status
 
-## Live coding
-
-This code base was written live during streaming. You can watch the recordings
-on [YouTube].
-
-[YouTube]: https://www.youtube.com/playlist?list=PLRAdsfhKI4OWNOSfS7EUu5GRAVmze1t2y
+[![Build Status](https://szaboopeeter.visualstudio.com/Minsk/_apis/build/status/szaboopeeter.minsk)](https://szaboopeeter.visualstudio.com/Minsk/_build/latest?definitionId=4)
