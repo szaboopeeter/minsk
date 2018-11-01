@@ -137,7 +137,7 @@ namespace Minsk.CodeAnalysis.Syntax
                     else
                     {
                         _position += 1;
-                        return new SyntaxToken(SyntaxKind.BangToken, start, ")", null);
+                        return new SyntaxToken(SyntaxKind.BangToken, start, "!", null);
                     }
             }
             _diagnostics.ReportBadCharacter(_position, Current);
