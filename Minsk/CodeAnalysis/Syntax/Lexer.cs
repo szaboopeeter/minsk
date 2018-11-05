@@ -1,12 +1,15 @@
-﻿using System.Collections.Generic;
-
-namespace Minsk.CodeAnalysis.Syntax
+﻿namespace Minsk.CodeAnalysis.Syntax
 {
     internal class Lexer
     {
-        private readonly string _text;
-        private int _position;
         private readonly DiagnosticBag _diagnostics = new DiagnosticBag();
+        private readonly string _text;
+
+        private int _position;
+
+        private int _start;
+        private SyntaxKind _kind;
+        private object _value;
 
         public Lexer(string text)
         {
@@ -30,119 +33,164 @@ namespace Minsk.CodeAnalysis.Syntax
             return _text[index];
         }
 
-        private void Next()
-        {
-            _position++;
-        }
-
         public SyntaxToken Lex()
         {
-            if (_position >= _text.Length)
-            {
-                return new SyntaxToken(SyntaxKind.EndOfFileToken, _position, "\0", null);
-            }
-
-            var start = _position;
-
-            if (char.IsDigit(Current))
-            {
-                while (char.IsDigit(Current))
-                {
-                    Next();
-                }
-
-                var lenght = _position - start;
-                var text = _text.Substring(start, lenght);
-
-                if (!int.TryParse(text, out var value))
-                {
-                    _diagnostics.ReportInvalidNumber(new TextSpan(start, lenght), _text, typeof(int));
-                }
-
-                return new SyntaxToken(SyntaxKind.NumberToken, start, text, value);
-            }
-
-            if (char.IsWhiteSpace(Current))
-            {
-                while (char.IsWhiteSpace(Current))
-                {
-                    Next();
-                }
-
-                var lenght = _position - start;
-                var text = _text.Substring(start, lenght);
-
-                return new SyntaxToken(SyntaxKind.WhiteSpaceToken, start, text, null);
-            }
-
-            if (char.IsLetter(Current))
-            {
-                while (char.IsLetter(Current))
-                {
-                    Next();
-                }
-
-                var lenght = _position - start;
-                var text = _text.Substring(start, lenght);
-                var kind = SyntaxFacts.GetKeywordKind(text);
-
-                return new SyntaxToken(kind, start, text, null);
-            }
+            _start = _position;
+            _kind = SyntaxKind.BadToken;
+            _value = null;
 
             switch (Current)
             {
+                case '\0':
+                    _kind = SyntaxKind.EndOfFileToken;
+                    break;
                 case '+':
-                    return new SyntaxToken(SyntaxKind.PlusToken, _position++, "+", null);
+                    _kind = SyntaxKind.PlusToken;
+                    _position++;
+                    break;
                 case '-':
-                    return new SyntaxToken(SyntaxKind.MinusToken, _position++, "-", null);
+                    _kind = SyntaxKind.MinusToken;
+                    _position++;
+                    break;
                 case '*':
-                    return new SyntaxToken(SyntaxKind.StarToken, _position++, "*", null);
+                    _kind = SyntaxKind.StarToken;
+                    _position++;
+                    break;
                 case '/':
-                    return new SyntaxToken(SyntaxKind.SlashToken, _position++, "/", null);
+                    _kind = SyntaxKind.SlashToken;
+                    _position++;
+                    break;
                 case '(':
-                    return new SyntaxToken(SyntaxKind.OpenParenthesisToken, _position++, "(", null);
+                    _kind = SyntaxKind.OpenParenthesisToken;
+                    _position++;
+                    break;
                 case ')':
-                    return new SyntaxToken(SyntaxKind.CloseParenthesisToken, _position++, ")", null);
+                    _kind = SyntaxKind.CloseParenthesisToken;
+                    _position++;
+                    break;
                 case '&':
                     if (LookAhead == '&')
                     {
+                        _kind = SyntaxKind.AmpersandAmpersandToken;
                         _position += 2;
-                        return new SyntaxToken(SyntaxKind.AmpersandAmpersandToken, start, "&&", null);
                     }
                     break;
                 case '|':
                     if (LookAhead == '|')
                     {
+                        _kind = SyntaxKind.PipePipeToken;
                         _position += 2;
-                        return new SyntaxToken(SyntaxKind.PipePipeToken, start, "||", null);
                     }
                     break;
                 case '=':
-                    if (LookAhead == '=')
+                    _position++;
+                    if (Current != '=')
                     {
-                        _position += 2;
-                        return new SyntaxToken(SyntaxKind.EqualsEqualsToken, start, "==", null);
+                        _kind = SyntaxKind.EqualsToken;
                     }
                     else
                     {
-                        _position += 1;
-                        return new SyntaxToken(SyntaxKind.EqualsToken, start, "=", null);
+                        _kind = SyntaxKind.EqualsEqualsToken;
+                        _position++;
                     }
+                    break;
                 case '!':
-                    if (LookAhead == '=')
+                    _position++;
+                    if (Current != '=')
                     {
-                        _position += 2;
-                        return new SyntaxToken(SyntaxKind.BangEqualsToken, start, "!=", null);
+                        _kind = SyntaxKind.BangToken;
                     }
                     else
                     {
-                        _position += 1;
-                        return new SyntaxToken(SyntaxKind.BangToken, start, "!", null);
+                        _kind = SyntaxKind.BangEqualsToken;
+                        _position++;
                     }
-            }
-            _diagnostics.ReportBadCharacter(_position, Current);
+                    break;
+                case '0':
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
+                    ReadNumberToken();
+                    break;
+                case ' ':
+                case '\t':
+                case '\r':
+                case '\n':
+                    ReadWhiteSpace();
+                    break;
+                default:
+                    if (char.IsLetter(Current))
+                    {
+                        ReadIdentifierOrKeyword();
+                    }
+                    else if (char.IsWhiteSpace(Current))
+                    {
+                        ReadWhiteSpace();
+                    }
+                    else
+                    {
+                        _diagnostics.ReportBadCharacter(_position, Current);
+                        _position++;
+                    }
+                    break;
 
-            return new SyntaxToken(SyntaxKind.BadToken, _position++, _text.Substring(_position - 1, 1), null);
+            }
+
+            var length = _position - _start;
+            var text = SyntaxFacts.GetText(_kind);
+            if (text == null)
+            {
+                text = _text.Substring(_start, length);
+            }
+
+            return new SyntaxToken(_kind, _start, text, _value);
+        }
+
+        private void ReadIdentifierOrKeyword()
+        {
+            while (char.IsLetter(Current))
+            {
+                _position++;
+            }
+
+            var lenght = _position - _start;
+            var text = _text.Substring(_start, lenght);
+            _kind = SyntaxFacts.GetKeywordKind(text);
+        }
+
+        private void ReadWhiteSpace()
+        {
+            while (char.IsWhiteSpace(Current))
+            {
+                _position++;
+            }
+
+            var lenght = _position - _start;
+            _kind = SyntaxKind.WhiteSpaceToken;
+        }
+
+        private void ReadNumberToken()
+        {
+            while (char.IsDigit(Current))
+            {
+                _position++;
+            }
+
+            var lenght = _position - _start;
+            var text = _text.Substring(_start, lenght);
+            if (!int.TryParse(text, out var value))
+            {
+                _diagnostics.ReportInvalidNumber(new TextSpan(_start, lenght), _text, typeof(int));
+            }
+
+            _value = value;
+            _kind = SyntaxKind.NumberToken;
         }
     }
 }
