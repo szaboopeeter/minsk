@@ -92,6 +92,7 @@ namespace Minsk.CodeAnalysis
         {
             var value = EvaluateExpression(a.Expression);
             _variables[a.Variable] = value;
+
             return value;
         }
 
