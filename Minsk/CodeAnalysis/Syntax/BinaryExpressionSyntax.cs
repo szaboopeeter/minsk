@@ -15,13 +15,5 @@ namespace Minsk.CodeAnalysis.Syntax
         public ExpressionSyntax Left { get; }
         public SyntaxToken OperatorToken { get; }
         public ExpressionSyntax Right { get; }
-
-        public override IEnumerable<SyntaxNode> GetChildren()
-        {
-            //return new[] { Left, OperatorToken, Right };
-            yield return Left;
-            yield return OperatorToken;
-            yield return Right;
-        }
     }
 }
