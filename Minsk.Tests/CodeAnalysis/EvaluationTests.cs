@@ -20,7 +20,6 @@ namespace Minsk.Tests.CodeAnalysis
         [InlineData("13==13", true)]
         [InlineData("12 != 3", true)]
         [InlineData("13 != 13", false)]
-        [InlineData("12 == 3", false)]
         [InlineData("true==true", true)]
         [InlineData("true== false", false)]
         [InlineData("false != false", false)]
