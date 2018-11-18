@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Minsk.CodeAnalysis.Text;
@@ -46,10 +47,21 @@ namespace Minsk.CodeAnalysis.Syntax
 
         private static void PrettyPrint(TextWriter writer, SyntaxNode node, string indent = "", bool isLast = true)
         {
+            var isToConsole = writer == Console.Out;
             var marker = isLast ? "└──" : "├──";
 
             writer.Write(indent);
+
+            if (isToConsole)
+            {
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+            }
             writer.Write(marker);
+
+            if (isToConsole)
+            {
+                Console.ForegroundColor = node is SyntaxToken ? ConsoleColor.Blue : ConsoleColor.Cyan;
+            }
             writer.Write(node.Kind);
 
             if (node is SyntaxToken t && t.Value != null)
@@ -59,6 +71,11 @@ namespace Minsk.CodeAnalysis.Syntax
             }
 
             writer.WriteLine();
+
+            if (isToConsole)
+            {
+                Console.ResetColor();
+            }
 
             indent += isLast ? "    " : "│  ";
 
