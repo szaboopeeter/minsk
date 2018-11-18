@@ -55,6 +55,7 @@ namespace Minsk
                     else if (input == "#reset")
                     {
                         previous = null;
+                        variables.Clear();
                         continue;
                     }
                 }

@@ -20,7 +20,6 @@ namespace Minsk.CodeAnalysis.Syntax
         public SourceText Text { get; }
         public ImmutableArray<Diagnostic> Diagnostics { get; }
         public CompilationUnitSyntax Root { get; }
-        public SyntaxToken EndOfFileToken { get; }
 
         public static SyntaxTree Parse(string text)
         {
