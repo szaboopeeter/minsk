@@ -15,6 +15,8 @@
         EqualsToken,
         OpenParenthesisToken,
         CloseParenthesisToken,
+        OpenBraceToken,
+        CloseBraceToken,
         IdentifierToken,
         PipePipeToken,
         AmpersandAmpersandToken,
@@ -27,6 +29,10 @@
 
         // Nodes
         CompilationUnit,
+
+        // Statements
+        BlockStatement,
+        ExpressionStatement,
 
         // Expressions
         LiteralExpression,

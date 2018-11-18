@@ -2,10 +2,14 @@
 {
     public sealed class CompilationUnitSyntax : SyntaxNode
     {
-        public CompilationUnitSyntax(ExpressionSyntax exression, SyntaxToken endOfFileToken) => Exression = exression;
+        public CompilationUnitSyntax(StatementSyntax statement, SyntaxToken endOfFileToken)
+        {
+            Statement = statement;
+            EndOfFileToken = endOfFileToken;
+        }
 
-        public ExpressionSyntax Exression { get; }
-
+        public StatementSyntax Statement { get; }
+        public SyntaxToken EndOfFileToken { get; }
         public override SyntaxKind Kind => SyntaxKind.CompilationUnit;
     }
 }
