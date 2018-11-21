@@ -15,6 +15,8 @@
         EqualsToken,
         OpenParenthesisToken,
         CloseParenthesisToken,
+        OpenBraceToken,
+        CloseBraceToken,
         IdentifierToken,
         PipePipeToken,
         AmpersandAmpersandToken,
@@ -24,6 +26,16 @@
         // Keywords
         FalseKeyword,
         TrueKeyword,
+        VarKeyword,
+        LetKeyword,
+
+        // Nodes
+        CompilationUnit,
+
+        // Statements
+        BlockStatement,
+        ExpressionStatement,
+        VariableDeclaration,
 
         // Expressions
         LiteralExpression,

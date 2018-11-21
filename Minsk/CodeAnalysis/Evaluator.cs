@@ -6,22 +6,59 @@ namespace Minsk.CodeAnalysis
 {
     internal class Evaluator
     {
-        private readonly BoundExpression _root;
+        private readonly BoundStatement _root;
         private readonly Dictionary<VariableSymbol, object> _variables;
 
-        public Evaluator(BoundExpression root)
+        private object _lastValue;
+
+        public Evaluator(BoundStatement root, Dictionary<VariableSymbol, object> variables)
         {
             _root = root;
-        }
-
-        public Evaluator(BoundExpression root, Dictionary<VariableSymbol, object> variables) : this(root)
-        {
             _variables = variables;
         }
 
         public object Evaluate()
         {
-            return EvaluateExpression(_root);
+            EvaluateStatement(_root);
+            return _lastValue;
+        }
+
+        private void EvaluateStatement(BoundStatement node)
+        {
+            switch (node.Kind)
+            {
+                case BoundNodeKind.BlockStatement:
+                    EvaluateBlockStatement((BoundBlockStatement)node);
+                    break;
+                case BoundNodeKind.ExpressionStatement:
+                    EvaluateExpressionStatement((BoundExpressionStatement)node);
+                    break;
+                case BoundNodeKind.VariableDeclaration:
+                    EvaluateVariableDeclaration((BoundVariableDeclaration)node);
+                    break;
+                default:
+                    throw new Exception($"Unexpected node {node.Kind}");
+            }
+        }
+
+        private void EvaluateVariableDeclaration(BoundVariableDeclaration node)
+        {
+            var value = EvaluateExpression(node.Initializer);
+            _variables[node.Variable] = value;
+            _lastValue = value;
+        }
+
+        private void EvaluateExpressionStatement(BoundExpressionStatement node)
+        {
+            _lastValue = EvaluateExpression(node.Expression);
+        }
+
+        private void EvaluateBlockStatement(BoundBlockStatement node)
+        {
+            foreach (var statement in node.Statements)
+            {
+                EvaluateStatement(statement);
+            }
         }
 
         private object EvaluateExpression(BoundExpression node)

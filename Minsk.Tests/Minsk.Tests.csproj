@@ -16,5 +16,6 @@
   <ItemGroup>
     <Folder Include="CodeAnalysis\" />
     <Folder Include="CodeAnalysis\Syntax\" />
+    <Folder Include="CodeAnalysis\Text\" />
   </ItemGroup>
 </Project>
