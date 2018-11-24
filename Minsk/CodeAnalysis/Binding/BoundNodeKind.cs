@@ -13,7 +13,8 @@
         // Statements
         BlockStatement,
         ExpressionStatement,
+        ForStatement,
         IfStatement,
-        WhileStatement
+        WhileStatement,
     }
 }

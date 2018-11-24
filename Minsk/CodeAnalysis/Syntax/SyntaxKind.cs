@@ -30,8 +30,10 @@
         // Keywords
         ElseKeyword,
         FalseKeyword,
+        ForKeyword,
         IfKeyword,
         LetKeyword,
+        ToKeyword,
         TrueKeyword,
         VarKeyword,
         WhileKeyword,
@@ -43,8 +45,9 @@
         // Statements
         BlockStatement,
         ExpressionStatement,
-        VariableDeclaration,
+        ForStatement,
         IfStatement,
+        VariableDeclaration,
         WhileStatement,
 
         // Expressions

@@ -60,8 +60,12 @@ namespace Minsk.CodeAnalysis.Syntax
                     return SyntaxKind.IfKeyword;
                 case "else":
                     return SyntaxKind.ElseKeyword;
+                case "for":
+                    return SyntaxKind.ForKeyword;
                 case "let":
                     return SyntaxKind.LetKeyword;
+                case "to":
+                    return SyntaxKind.ToKeyword;
                 case "true":
                     return SyntaxKind.TrueKeyword;
                 case "var":
@@ -138,10 +142,14 @@ namespace Minsk.CodeAnalysis.Syntax
                     return "else";
                 case SyntaxKind.FalseKeyword:
                     return "false";
+                case SyntaxKind.ForKeyword:
+                    return "for";
                 case SyntaxKind.IfKeyword:
                     return "if";
                 case SyntaxKind.LetKeyword:
                     return "let";
+                case SyntaxKind.ToKeyword:
+                    return "to";
                 case SyntaxKind.TrueKeyword:
                     return "true";
                 case SyntaxKind.VarKeyword:
