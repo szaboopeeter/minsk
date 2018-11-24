@@ -73,64 +73,6 @@ namespace Minsk.Tests.CodeAnalysis
         }
 
         [Fact]
-        public void Evaluator_Namw_Reports_Undefined()
-        {
-            var text = "[x] * 10";
-
-            var diagnostics = @"
-                Variable 'x' does not exist.
-            ";
-
-            AssertDiagnostics(text, diagnostics);
-        }
-
-        [Fact]
-        public void Evaluator_Assignment_Reports_Undefined()
-        {
-            var text = "[x] = 10";
-
-            var diagnostics = @"
-                Variable 'x' does not exist.
-            ";
-
-            AssertDiagnostics(text, diagnostics);
-        }
-
-        [Fact]
-        public void Evaluator_Assignment_Reports_CannotAssign()
-        {
-            var text = @"
-                {
-                    let x = 10
-                    x [=] 0
-                }
-            ";
-
-            var diagnostics = @"
-                Variable 'x' is read-only and cannot be assigned to.
-            ";
-
-            AssertDiagnostics(text, diagnostics);
-        }
-
-        [Fact]
-        public void Evaluator_Assignment_Reports_CannotConvert()
-        {
-            var text = @"
-                {
-                    var x = 10
-                    x = [true]
-                }
-            ";
-
-            var diagnostics = @"
-                Cannot convert type 'System.Boolean' to 'System.Int32'.
-            ";
-
-            AssertDiagnostics(text, diagnostics);
-        }
-
-        [Fact]
         public void Evaluator_IfStatement_Reports_CannotConvert()
         {
             var text = @"
@@ -203,7 +145,7 @@ namespace Minsk.Tests.CodeAnalysis
         }
 
         [Fact]
-        public void Evaluator_Unary_Reports_Undefined()
+        public void Evaluator_UnaryExpression_Reports_Undefined()
         {
             var text = "10 [*] false";
 
@@ -215,12 +157,70 @@ namespace Minsk.Tests.CodeAnalysis
         }
 
         [Fact]
-        public void Evaluator_Binary_Reports_Undefined()
+        public void Evaluator_BinaryExpression_Reports_Undefined()
         {
             var text = "[+]true";
 
             var diagnostics = @"
                 Unary operator '+' is not defined for type 'System.Boolean'.
+            ";
+
+            AssertDiagnostics(text, diagnostics);
+        }
+
+        [Fact]
+        public void Evaluator_NameExpression_Reports_Undefined()
+        {
+            var text = "[x] * 10";
+
+            var diagnostics = @"
+                Variable 'x' does not exist.
+            ";
+
+            AssertDiagnostics(text, diagnostics);
+        }
+
+        [Fact]
+        public void Evaluator_AssignmentExpression_Reports_Undefined()
+        {
+            var text = "[x] = 10";
+
+            var diagnostics = @"
+                Variable 'x' does not exist.
+            ";
+
+            AssertDiagnostics(text, diagnostics);
+        }
+
+        [Fact]
+        public void Evaluator_AssignmentExpression_Reports_CannotAssign()
+        {
+            var text = @"
+                {
+                    let x = 10
+                    x [=] 0
+                }
+            ";
+
+            var diagnostics = @"
+                Variable 'x' is read-only and cannot be assigned to.
+            ";
+
+            AssertDiagnostics(text, diagnostics);
+        }
+
+        [Fact]
+        public void Evaluator_AssignmentExpression_Reports_CannotConvert()
+        {
+            var text = @"
+                {
+                    var x = 10
+                    x = [true]
+                }
+            ";
+
+            var diagnostics = @"
+                Cannot convert type 'System.Boolean' to 'System.Int32'.
             ";
 
             AssertDiagnostics(text, diagnostics);
