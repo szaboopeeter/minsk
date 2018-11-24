@@ -21,6 +21,10 @@
         PipePipeToken,
         AmpersandAmpersandToken,
         EqualsEqualsToken,
+        LessToken,
+        LessOrEqualsToken,
+        GreaterToken,
+        GraterOrEqualsToken,
         BangEqualsToken,
 
         // Keywords
@@ -43,6 +47,6 @@
         UnaryExpression,
         BinaryExpression,
         ParenthesizedExpression,
-        AssignmentExpression
+        AssignmentExpression,
     }
 }
