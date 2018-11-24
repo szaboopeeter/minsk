@@ -40,10 +40,13 @@ namespace Minsk.Tests.CodeAnalysis
         [InlineData("!true", false)]
         [InlineData("!false", true)]
         [InlineData("{var a=0 (a=10)*a}", 100)]
+        [InlineData("{var a=0 if a == 0 a=10 a}", 10)]
+        [InlineData("{var a=0 if a == 20 a=10 a}", 0)]
+        [InlineData("{var a=0 if a == 0 a=10 else a=5 a}", 10)]
+        [InlineData("{var a=0 if a == 20 a=10 else a = 5 a}", 5)]
         public void SyntaxFact_GetText_RoundTrips(string text, object expectedValue)
         {
             AssertValue(text, expectedValue);
-
         }
 
         [Fact]

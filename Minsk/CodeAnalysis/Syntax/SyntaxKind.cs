@@ -28,18 +28,22 @@
         BangEqualsToken,
 
         // Keywords
+        ElseKeyword,
         FalseKeyword,
+        IfKeyword,
+        LetKeyword,
         TrueKeyword,
         VarKeyword,
-        LetKeyword,
 
         // Nodes
         CompilationUnit,
+        ElseClause,
 
         // Statements
         BlockStatement,
         ExpressionStatement,
         VariableDeclaration,
+        IfStatement,
 
         // Expressions
         LiteralExpression,

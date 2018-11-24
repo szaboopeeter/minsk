@@ -82,9 +82,34 @@ namespace Minsk.CodeAnalysis.Syntax
                 case SyntaxKind.LetKeyword:
                 case SyntaxKind.VarKeyword:
                     return ParseVariableDeclaration();
+                case SyntaxKind.IfKeyword:
+                    return ParseIfStatement();
+                default:
+                    return ParseExpressionStatement();
+            }
+        }
+
+        private StatementSyntax ParseIfStatement()
+        {
+            var keyword = MatchToken(SyntaxKind.IfKeyword);
+            var condition = ParseExpression();
+            var statement = ParseStatement();
+            var elseClause = ParseOptionalElseClause();
+
+            return new IfStatementSyntax(keyword, condition, statement, elseClause);
+        }
+
+        private ElseClauseSyntax ParseOptionalElseClause()
+        {
+            if (Current.Kind != SyntaxKind.ElseKeyword)
+            {
+                return null;
             }
 
-            return ParseExpressionStatemen();
+            var keyword = NextToken();
+            var statement = ParseStatement();
+
+            return new ElseClauseSyntax(keyword, statement);
         }
 
         private StatementSyntax ParseVariableDeclaration()
@@ -98,7 +123,7 @@ namespace Minsk.CodeAnalysis.Syntax
             return new VariableDeclarationSyntax(keyword, identifier, equals, initializer);
         }
 
-        private StatementSyntax ParseExpressionStatemen()
+        private StatementSyntax ParseExpressionStatement()
         {
             var expression = ParseExpression();
             return new ExpressionStatementSyntax(expression);
