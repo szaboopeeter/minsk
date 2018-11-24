@@ -33,6 +33,10 @@ namespace Minsk.CodeAnalysis.Syntax
 
                 case SyntaxKind.EqualsEqualsToken:
                 case SyntaxKind.BangEqualsToken:
+                case SyntaxKind.LessToken:
+                case SyntaxKind.LessOrEqualsToken:
+                case SyntaxKind.GreaterToken:
+                case SyntaxKind.GraterOrEqualsToken:
                     return 3;
 
                 case SyntaxKind.AmpersandAmpersandToken:
@@ -52,12 +56,22 @@ namespace Minsk.CodeAnalysis.Syntax
             {
                 case "false":
                     return SyntaxKind.FalseKeyword;
+                case "if":
+                    return SyntaxKind.IfKeyword;
+                case "else":
+                    return SyntaxKind.ElseKeyword;
+                case "for":
+                    return SyntaxKind.ForKeyword;
                 case "let":
                     return SyntaxKind.LetKeyword;
+                case "to":
+                    return SyntaxKind.ToKeyword;
                 case "true":
                     return SyntaxKind.TrueKeyword;
                 case "var":
                     return SyntaxKind.VarKeyword;
+                case "while":
+                    return SyntaxKind.WhileKeyword;
                 default:
                     return SyntaxKind.IdentifierToken;
             }
@@ -108,6 +122,14 @@ namespace Minsk.CodeAnalysis.Syntax
                     return "==";
                 case SyntaxKind.BangEqualsToken:
                     return "!=";
+                case SyntaxKind.LessToken:
+                    return "<";
+                case SyntaxKind.LessOrEqualsToken:
+                    return "<=";
+                case SyntaxKind.GreaterToken:
+                    return ">";
+                case SyntaxKind.GraterOrEqualsToken:
+                    return ">=";
                 case SyntaxKind.OpenParenthesisToken:
                     return "(";
                 case SyntaxKind.CloseParenthesisToken:
@@ -116,14 +138,24 @@ namespace Minsk.CodeAnalysis.Syntax
                     return "{";
                 case SyntaxKind.CloseBraceToken:
                     return "}";
+                case SyntaxKind.ElseKeyword:
+                    return "else";
                 case SyntaxKind.FalseKeyword:
                     return "false";
+                case SyntaxKind.ForKeyword:
+                    return "for";
+                case SyntaxKind.IfKeyword:
+                    return "if";
                 case SyntaxKind.LetKeyword:
                     return "let";
+                case SyntaxKind.ToKeyword:
+                    return "to";
                 case SyntaxKind.TrueKeyword:
                     return "true";
                 case SyntaxKind.VarKeyword:
                     return "var";
+                case SyntaxKind.WhileKeyword:
+                    return "while";
                 default:
                     return null;
             }
