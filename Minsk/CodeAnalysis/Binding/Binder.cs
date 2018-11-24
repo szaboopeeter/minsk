@@ -198,6 +198,14 @@ namespace Minsk.CodeAnalysis.Binding
         {
             var name = syntax.IdentifierToken.Text;
 
+            if (string.IsNullOrEmpty(name))
+            {
+                // The token was inserted by the parser.
+                // We already reported an error 
+                // so we can just return an error expression.
+                return new BoundLiteralExpression(0);
+            }
+
             if (!_scope.TryLookup(name, out var variable))
             {
                 _diagnostics.ReportUndefinedName(syntax.IdentifierToken.Span, name);
