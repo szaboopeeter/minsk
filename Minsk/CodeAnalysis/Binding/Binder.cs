@@ -25,7 +25,9 @@ namespace Minsk.CodeAnalysis.Binding
             var diagnostics = binder.Diagnostics.ToImmutableArray();
 
             if (previous != null)
+            {
                 diagnostics = diagnostics.InsertRange(0, previous.Diagnostics);
+            }
 
             return new BoundGlobalScope(previous, diagnostics, variables, expression);
         }
@@ -139,7 +141,9 @@ namespace Minsk.CodeAnalysis.Binding
             var variable = new VariableSymbol(name, isReadOnly, initializer.Type);
 
             if (!_scope.TryDeclare(variable))
+            {
                 _diagnostics.ReportVariableAlreadyDeclared(syntax.Identifier.Span, name);
+            }
 
             return new BoundVariableDeclaration(variable, initializer);
         }
@@ -227,7 +231,9 @@ namespace Minsk.CodeAnalysis.Binding
             }
 
             if (variable.IsReadOnly)
+            {
                 _diagnostics.ReportCannotAssign(syntax.EqualsToken.Span, name);
+            }
 
             if (boundExpression.Type != variable.Type)
             {

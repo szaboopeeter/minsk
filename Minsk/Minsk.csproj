@@ -13,5 +13,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CodeAnalysis\Text\" />
+    <Folder Include="CodeAnalysis\Lowering\" />
   </ItemGroup>
 </Project>
