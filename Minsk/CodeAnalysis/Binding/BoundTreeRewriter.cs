@@ -102,7 +102,7 @@ namespace Minsk.CodeAnalysis.Binding
                 return node;
             }
 
-            return new BoundConditionalGotoStatement(node.Label, condition, node.JumpIfFalse);
+            return new BoundConditionalGotoStatement(node.Label, condition, node.JumpIfTrue);
         }
 
         protected virtual BoundStatement RewriteGotoStatement(BoundGotoStatement node)
