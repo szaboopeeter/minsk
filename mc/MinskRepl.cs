@@ -43,7 +43,7 @@ namespace Minsk
         {
             if (string.IsNullOrEmpty(text))
             {
-                return false;
+                return true;
             }
 
             var syntaxTree = SyntaxTree.Parse(text);
@@ -122,6 +122,28 @@ namespace Minsk
                 }
 
                 Console.WriteLine();
+            }
+        }
+
+        protected override void RenderLine(string line)
+        {
+            var tokens = SyntaxTree.ParseTokens(line);
+            foreach (var token in tokens)
+            {
+                var isKeyword = token.Kind.ToString().EndsWith("Keyword");
+                var isNumber = token.Kind == SyntaxKind.NumberToken;
+                if (isKeyword)
+                {
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                }
+                else if (!isNumber)
+                {
+                    Console.ForegroundColor = ConsoleColor.DarkGray;
+                }
+
+                Console.Write(token.Text);
+
+                Console.ResetColor();
             }
         }
     }
