@@ -34,7 +34,7 @@ namespace Minsk.CodeAnalysis
         public void ReportBadCharacter(int position, char character)
         {
             var span = new TextSpan(position, 1);
-            var message = $"Bad character input: '{character}.'";
+            var message = $"Bad character input: '{character}'.";
             Report(span, message);
         }
 
