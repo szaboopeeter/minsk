@@ -46,6 +46,18 @@ namespace Minsk
                 return true;
             }
 
+            var lastTwoLinesAreBlank = text
+                    .Split(Environment.NewLine)
+                    .Reverse()
+                    .TakeWhile(s => string.IsNullOrEmpty(s))
+                    .Take(2)
+                    .Count() == 2;
+
+            if (lastTwoLinesAreBlank)
+            {
+                return true;
+            }
+
             var syntaxTree = SyntaxTree.Parse(text);
 
             if (syntaxTree.Root.Statement.GetLastToken().IsMissing)
