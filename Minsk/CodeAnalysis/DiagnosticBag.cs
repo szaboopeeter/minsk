@@ -38,6 +38,12 @@ namespace Minsk.CodeAnalysis
             Report(span, message);
         }
 
+        public void ReportUndeterminedString(TextSpan span)
+        {
+            var message = "Unterminated string literal.";
+            Report(span, message);
+        }
+
         public void ReportUnexpectedToken(TextSpan span, SyntaxKind actualKind, SyntaxKind expectedKind)
         {
             var message = $"Unexpected token <{actualKind}>, expected <{expectedKind}>.";

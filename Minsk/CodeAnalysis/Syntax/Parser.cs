@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using Minsk.CodeAnalysis.Text;
 
@@ -251,6 +250,9 @@ namespace Minsk.CodeAnalysis.Syntax
                 case SyntaxKind.NumberToken:
                     return ParseNumberLiteral();
 
+                case SyntaxKind.StringToken:
+                    return ParseStringLiteral();
+
                 case SyntaxKind.IdentifierToken:
                 default:
                     return ParseNameExpression();
@@ -261,6 +263,12 @@ namespace Minsk.CodeAnalysis.Syntax
         {
             var numberToken = MatchToken(SyntaxKind.NumberToken);
             return new LiteralExpressionSyntax(numberToken);
+        }
+
+        private ExpressionSyntax ParseStringLiteral()
+        {
+            var stringToken = MatchToken(SyntaxKind.StringToken);
+            return new LiteralExpressionSyntax(stringToken);
         }
 
         private ExpressionSyntax ParseParenthesizedExpression()
