@@ -47,10 +47,10 @@ namespace Minsk.CodeAnalysis.Lowering
             return new BoundBlockStatement(builder.ToImmutable());
         }
 
-        private LabelSymbol GenerateLabel()
+        private BoundLabel GenerateLabel()
         {
             var name = $"Label{++_labelCount}";
-            return new LabelSymbol(name);
+            return new BoundLabel(name);
         }
 
         protected override BoundStatement RewriteIfStatement(BoundIfStatement node)
