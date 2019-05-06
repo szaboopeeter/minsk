@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Minsk.CodeAnalysis.Symbols;
 using Minsk.CodeAnalysis.Text;
 
 namespace Minsk.CodeAnalysis.Syntax
@@ -285,7 +286,7 @@ namespace Minsk.CodeAnalysis.Syntax
             var text = _text.ToString(_start, lenght);
             if (!int.TryParse(text, out var value))
             {
-                _diagnostics.ReportInvalidNumber(new TextSpan(_start, lenght), text, typeof(int));
+                _diagnostics.ReportInvalidNumber(new TextSpan(_start, lenght), text, TypeSymbol.Int);
             }
 
             _value = value;
