@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+using Minsk.CodeAnalysis.Symbols;
 using Minsk.CodeAnalysis.Syntax;
 using Minsk.CodeAnalysis.Text;
 
@@ -25,7 +25,7 @@ namespace Minsk.CodeAnalysis
             _diagnostics.Add(diagnostic);
         }
 
-        public void ReportInvalidNumber(TextSpan span, string text, Type type)
+        public void ReportInvalidNumber(TextSpan span, string text, TypeSymbol type)
         {
             var message = $"The number {text} isn't valid {type}.";
             Report(span, message);
@@ -34,7 +34,13 @@ namespace Minsk.CodeAnalysis
         public void ReportBadCharacter(int position, char character)
         {
             var span = new TextSpan(position, 1);
-            var message = $"Bad character input: '{character}.'";
+            var message = $"Bad character input: '{character}'.";
+            Report(span, message);
+        }
+
+        public void ReportUndeterminedString(TextSpan span)
+        {
+            var message = "Unterminated string literal.";
             Report(span, message);
         }
 
@@ -45,14 +51,14 @@ namespace Minsk.CodeAnalysis
             Report(span, message);
         }
 
-        public void ReportUndefinedUnaryOperator(TextSpan span, string operatorText, Type operandType)
+        public void ReportUndefinedUnaryOperator(TextSpan span, string operatorText, TypeSymbol operandType)
         {
             var message = $"Unary operator '{operatorText}' is not defined for type '{operandType}'.";
 
             Report(span, message);
         }
 
-        public void ReportUndefinedBinaryOperator(TextSpan span, string operatorText, Type leftOperandType, Type rightOperandType)
+        public void ReportUndefinedBinaryOperator(TextSpan span, string operatorText, TypeSymbol leftOperandType, TypeSymbol rightOperandType)
         {
             var message = $"Binary operator '{operatorText}' is not defined for types '{leftOperandType}' and '{rightOperandType}'.";
 
@@ -66,7 +72,7 @@ namespace Minsk.CodeAnalysis
             Report(span, message);
         }
 
-        internal void ReportCannotConvert(TextSpan span, Type fromType, Type toType)
+        internal void ReportCannotConvert(TextSpan span, TypeSymbol fromType, TypeSymbol toType)
         {
             var message = $"Cannot convert type '{fromType}' to '{toType}'.";
 

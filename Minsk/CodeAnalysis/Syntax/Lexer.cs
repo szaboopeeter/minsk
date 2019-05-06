@@ -1,4 +1,6 @@
-﻿using Minsk.CodeAnalysis.Text;
+﻿using System.Text;
+using Minsk.CodeAnalysis.Symbols;
+using Minsk.CodeAnalysis.Text;
 
 namespace Minsk.CodeAnalysis.Syntax
 {
@@ -158,6 +160,9 @@ namespace Minsk.CodeAnalysis.Syntax
                         _position++;
                     }
                     break;
+                case '"':
+                    ReadString();
+                    break;
                 case '0':
                 case '1':
                 case '2':
@@ -204,6 +209,49 @@ namespace Minsk.CodeAnalysis.Syntax
             return new SyntaxToken(_kind, _start, text, _value);
         }
 
+        private void ReadString()
+        {
+            // Note: Escaping: "Test ""quoted"""
+
+            // Skip the current quote
+            _position++;
+            var sb = new StringBuilder();
+            var done = false;
+
+            while (!done)
+            {
+                switch (Current)
+                {
+                    case '\0':
+                    case '\r':
+                    case '\n':
+                        var span = new TextSpan(_start, 1);
+                        _diagnostics.ReportUndeterminedString(span);
+                        done = true;
+                        break;
+                    case '"':
+                        if (LookAhead == '"')
+                        {
+                            sb.Append(Current);
+                            _position += 2;
+                        }
+                        else
+                        {
+                            _position++;
+                            done = true;
+                        }
+                        break;
+                    default:
+                        sb.Append(Current);
+                        _position++;
+                        break;
+                }
+            }
+
+            _kind = SyntaxKind.StringToken;
+            _value = sb.ToString();
+        }
+
         private void ReadIdentifierOrKeyword()
         {
             while (char.IsLetter(Current))
@@ -238,7 +286,7 @@ namespace Minsk.CodeAnalysis.Syntax
             var text = _text.ToString(_start, lenght);
             if (!int.TryParse(text, out var value))
             {
-                _diagnostics.ReportInvalidNumber(new TextSpan(_start, lenght), text, typeof(int));
+                _diagnostics.ReportInvalidNumber(new TextSpan(_start, lenght), text, TypeSymbol.Int);
             }
 
             _value = value;
