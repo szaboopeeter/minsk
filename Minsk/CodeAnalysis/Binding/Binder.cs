@@ -44,19 +44,31 @@ namespace Minsk.CodeAnalysis.Binding
                 previous = previous.Previous;
             }
 
-            BoundScope parent = null;
+            var parent = CreateRootScope();
 
             while (stack.Count > 0)
             {
                 previous = stack.Pop();
                 var scope = new BoundScope(parent);
                 foreach (var v in previous.Variables)
-                    scope.TryDeclare(v);
+                    scope.TryDeclareVariable(v);
 
                 parent = scope;
             }
 
             return parent;
+        }
+
+        private static BoundScope CreateRootScope()
+        {
+            var result = new BoundScope(null);
+
+            foreach (var f in BuiltinFunctions.GetAll())
+            {
+                result.TryDeclareFunction(f);
+            }
+
+            return result;
         }
 
         public DiagnosticBag Diagnostics => _diagnostics;
@@ -216,7 +228,7 @@ namespace Minsk.CodeAnalysis.Binding
                 return new BoundErrorExpression();
             }
 
-            if (!_scope.TryLookup(name, out var variable))
+            if (!_scope.TryLookupVariable(name, out var variable))
             {
                 _diagnostics.ReportUndefinedName(syntax.IdentifierToken.Span, name);
                 return new BoundErrorExpression();
@@ -230,7 +242,7 @@ namespace Minsk.CodeAnalysis.Binding
             var name = syntax.IdentifierToken.Text;
             var boundExpression = BindExpression(syntax.Expression);
 
-            if (!_scope.TryLookup(name, out var variable))
+            if (!_scope.TryLookupVariable(name, out var variable))
             {
                 _diagnostics.ReportUndefinedName(syntax.IdentifierToken.Span, name);
                 return boundExpression;
@@ -302,10 +314,7 @@ namespace Minsk.CodeAnalysis.Binding
                 boundArguments.Add(boundArgument);
             }
 
-            var functions = BuiltinFunctions.GetAll();
-
-            var function = functions.SingleOrDefault(f => f.Name == syntax.Identifier.Text);
-            if (function == null)
+            if (!_scope.TryLookupFunction(syntax.Identifier.Text, out var function))
             {
                 _diagnostics.ReportUndefinedFunction(syntax.Identifier.Span, syntax.Identifier.Text);
                 return new BoundErrorExpression();
@@ -338,7 +347,7 @@ namespace Minsk.CodeAnalysis.Binding
             var declared = !identifier.IsMissing;
             var variable = new VariableSymbol(name, isReadOnly, type);
 
-            if (declared && !_scope.TryDeclare(variable))
+            if (declared && !_scope.TryDeclareVariable(variable))
             {
                 Diagnostics.ReportVariableAlreadyDeclared(identifier.Span, name);
             }
