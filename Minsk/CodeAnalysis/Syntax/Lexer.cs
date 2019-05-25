@@ -136,6 +136,10 @@ namespace Minsk.CodeAnalysis.Syntax
                         _position++;
                     }
                     break;
+                case ',':
+                    _kind = SyntaxKind.CommaToken;
+                    _position++;
+                    break;
                 case '<':
                     _position++;
                     if (Current != '=')

@@ -3,7 +3,7 @@ using Minsk.CodeAnalysis.Symbols;
 
 namespace Minsk.CodeAnalysis.Binding
 {
-    internal sealed class BoundErrorExpresssion : BoundExpression
+    internal sealed class BoundErrorExpression : BoundExpression
     {
         public override TypeSymbol Type => TypeSymbol.Error;
 

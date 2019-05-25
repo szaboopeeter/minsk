@@ -23,12 +23,21 @@ namespace Minsk.CodeAnalysis.Syntax
         public IEnumerable<SyntaxNode> GetChildren()
         {
             var properties = GetType().GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+
             foreach (var property in properties)
             {
                 if (typeof(SyntaxNode).IsAssignableFrom(property.PropertyType))
                 {
                     var child = (SyntaxNode)property.GetValue(this);
                     if (child != null)
+                    {
+                        yield return child;
+                    }
+                }
+                else if (typeof(SeparatedSyntaxList).IsAssignableFrom(property.PropertyType))
+                {
+                    var separatedSyntaxList = (SeparatedSyntaxList)property.GetValue(this);
+                    foreach (var child in separatedSyntaxList.GetWithSeparators())
                     {
                         yield return child;
                     }
