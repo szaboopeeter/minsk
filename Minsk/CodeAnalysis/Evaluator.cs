@@ -10,6 +10,7 @@ namespace Minsk.CodeAnalysis
     {
         private readonly BoundBlockStatement _root;
         private readonly Dictionary<VariableSymbol, object> _variables;
+        private Random _random;
 
         private object _lastValue;
 
@@ -115,9 +116,19 @@ namespace Minsk.CodeAnalysis
             }
             else if (node.Function == BuiltinFunctions.Print)
             {
-                var message = ((string)EvaluateExpression(node.Arguments[0]));
+                var message = (string)EvaluateExpression(node.Arguments[0]);
                 Console.WriteLine(message);
                 return null;
+            }
+            else if (node.Function == BuiltinFunctions.Rnd)
+            {
+                var max = (int)EvaluateExpression(node.Arguments[0]);
+                if (_random == null)
+                {
+                    _random = new Random();
+                }
+
+                return _random.Next(max);
             }
             else
             {
