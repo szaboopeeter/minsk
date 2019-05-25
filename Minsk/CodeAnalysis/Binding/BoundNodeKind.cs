@@ -9,6 +9,8 @@
         UnaryExpression,
         BinaryExpression,
         ErrorExpression,
+        CallExpression,
+        ConversionExpression,
 
         // Statements
         BlockStatement,

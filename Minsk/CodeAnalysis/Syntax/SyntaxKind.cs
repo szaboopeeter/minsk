@@ -31,6 +31,7 @@
         GreaterToken,
         GraterOrEqualsToken,
         BangEqualsToken,
+        CommaToken,
 
         // Keywords
         ElseKeyword,
@@ -62,5 +63,6 @@
         BinaryExpression,
         ParenthesizedExpression,
         AssignmentExpression,
+        CallExpression,
     }
 }
