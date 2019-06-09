@@ -149,6 +149,8 @@ namespace Minsk.CodeAnalysis.Binding
                     return RewriteVariableDeclaration((BoundVariableDeclaration)node);
                 case BoundNodeKind.WhileStatement:
                     return RewriteWhileStatement((BoundWhileStatement)node);
+                case BoundNodeKind.DoWhileStatement:
+                    return RewriteDoWhileStatement((BoundDoWhileStatement)node);
                 default:
                     throw new Exception($"Unexpected node: {node.Kind}.");
             }
@@ -270,6 +272,19 @@ namespace Minsk.CodeAnalysis.Binding
             }
 
             return new BoundWhileStatement(condition, body);
+        }
+
+        protected virtual BoundStatement RewriteDoWhileStatement(BoundDoWhileStatement node)
+        {
+            var body = RewriteStatement(node.Body);
+            var condition = RewriteExpression(node.Condition);
+
+            if (body == node.Body && condition == node.Condition)
+            {
+                return node;
+            }
+
+            return new BoundDoWhileStatement(body, condition);
         }
     }
 }

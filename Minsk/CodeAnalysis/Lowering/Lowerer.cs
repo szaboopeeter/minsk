@@ -120,9 +120,7 @@ namespace Minsk.CodeAnalysis.Lowering
             // <body>
             // check:
             // gotoIfTrue <condition> continue
-            // end:
 
-            var endLabel = GenerateLabel();
             var continueLabel = GenerateLabel();
             var checkLabel = GenerateLabel();
 
@@ -130,16 +128,40 @@ namespace Minsk.CodeAnalysis.Lowering
             var continueLabelStatement = new BoundLabelStatement(continueLabel);
             var checkLabelStatement = new BoundLabelStatement(checkLabel);
             var gotoIfTrue = new BoundConditionalGotoStatement(continueLabel, node.Condition);
-            var endLabelStatement = new BoundLabelStatement(endLabel);
 
             var result = new BoundBlockStatement(ImmutableArray.Create(
                     gotoCheck,
                     continueLabelStatement,
                     node.Body,
                     checkLabelStatement,
-                    gotoIfTrue,
-                    endLabelStatement
-                ));
+                    gotoIfTrue
+            ));
+
+            return RewriteStatement(result);
+        }
+
+        protected override BoundStatement RewriteDoWhileStatement(BoundDoWhileStatement node)
+        {
+            // do
+            //     <body>
+            // while <condition>
+            //
+            // ---->
+            //
+            // continue:
+            // <body>
+            // gotoIfTrue <condition> continue
+
+            var continueLabel = GenerateLabel();
+
+            var continueLabelStatement = new BoundLabelStatement(continueLabel);
+            var gotoIfTrue = new BoundConditionalGotoStatement(continueLabel, node.Condition);
+
+            var result = new BoundBlockStatement(ImmutableArray.Create(
+                    continueLabelStatement,
+                    node.Body,
+                    gotoIfTrue
+            ));
 
             return RewriteStatement(result);
         }
