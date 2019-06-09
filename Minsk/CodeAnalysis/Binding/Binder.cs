@@ -377,7 +377,7 @@ namespace Minsk.CodeAnalysis.Binding
 
             if (declared && !_scope.TryDeclareVariable(variable))
             {
-                Diagnostics.ReportVariableAlreadyDeclared(identifier.Span, name);
+                Diagnostics.ReportSymbolAlreadyDeclared(identifier.Span, name);
             }
 
             return variable;
