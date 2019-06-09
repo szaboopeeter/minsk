@@ -43,6 +43,7 @@
         TrueKeyword,
         VarKeyword,
         WhileKeyword,
+        DoKeyword,
 
         // Nodes
         CompilationUnit,
@@ -55,6 +56,7 @@
         IfStatement,
         VariableDeclaration,
         WhileStatement,
+        DoWhileStatement,
 
         // Expressions
         LiteralExpression,
