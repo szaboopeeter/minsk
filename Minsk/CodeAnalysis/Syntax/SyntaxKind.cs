@@ -18,6 +18,7 @@
         CloseParenthesisToken,
         OpenBraceToken,
         CloseBraceToken,
+        ColonToken,
         IdentifierToken,
         TildeToken,
         PipeToken,
@@ -37,6 +38,7 @@
         ElseKeyword,
         FalseKeyword,
         ForKeyword,
+        FunctionKeyword,
         IfKeyword,
         LetKeyword,
         ToKeyword,
@@ -47,7 +49,11 @@
 
         // Nodes
         CompilationUnit,
+        GlobalStatement,
+        FunctionDeclaration,
+        Parameter,
         ElseClause,
+        TypeClause,
 
         // Statements
         BlockStatement,

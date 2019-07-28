@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using Minsk.CodeAnalysis.Binding;
 using Minsk.CodeAnalysis.Symbols;
 using static Minsk.CodeAnalysis.Symbols.FunctionSymbol;
@@ -8,35 +9,42 @@ namespace Minsk.CodeAnalysis
 {
     internal class Evaluator
     {
-        private readonly BoundBlockStatement _root;
-        private readonly Dictionary<VariableSymbol, object> _variables;
+        private readonly BoundProgram _program;
+        private readonly Dictionary<VariableSymbol, object> _globals;
+        private readonly Stack<Dictionary<VariableSymbol, object>> _locals = new Stack<Dictionary<VariableSymbol, object>>();
         private Random _random;
 
         private object _lastValue;
 
-        public Evaluator(BoundBlockStatement root, Dictionary<VariableSymbol, object> variables)
+        public Evaluator(BoundProgram program, Dictionary<VariableSymbol, object> variables)
+
         {
-            _root = root;
-            _variables = variables;
+            _program = program;
+            _globals = variables;
+            _locals.Push(new Dictionary<VariableSymbol, object>());
         }
 
         public object Evaluate()
         {
+            return EvaluateStatement(_program.Statement);
+        }
+
+        private object EvaluateStatement(BoundBlockStatement body)
+        {
             var labelToIndex = new Dictionary<BoundLabel, int>();
 
-            for (var i = 0; i < _root.Statements.Length; i++)
+            for (var i = 0; i < body.Statements.Length; i++)
             {
-                if (_root.Statements[i] is BoundLabelStatement label)
+                if (body.Statements[i] is BoundLabelStatement label)
                 {
                     labelToIndex.Add(label.Label, i + 1);
                 }
             }
 
-
             var index = 0;
-            while (index < _root.Statements.Length)
+            while (index < body.Statements.Length)
             {
-                var statement = _root.Statements[index];
+                var statement = body.Statements[index];
 
                 switch (statement.Kind)
                 {
@@ -78,8 +86,8 @@ namespace Minsk.CodeAnalysis
         private void EvaluateVariableDeclaration(BoundVariableDeclaration node)
         {
             var value = EvaluateExpression(node.Initializer);
-            _variables[node.Variable] = value;
             _lastValue = value;
+            Assign(node.Variable, value);
         }
 
         private void EvaluateExpressionStatement(BoundExpressionStatement node)
@@ -156,7 +164,23 @@ namespace Minsk.CodeAnalysis
             }
             else
             {
-                throw new Exception($"Unexpected function '{node.Function.Name}'.");
+                var locals = new Dictionary<VariableSymbol, object>();
+                for (int i = 0; i < node.Arguments.Length; i++)
+                {
+                    var parameter = node.Function.Parameters[i];
+                    var value = EvaluateExpression(node.Arguments[i]);
+                    locals.Add(parameter, value);
+                }
+
+                _locals.Push(locals);
+
+                var statement = _program.Functions[node.Function];
+
+                var result = EvaluateStatement(statement);
+
+                _locals.Pop();
+
+                return result;
             }
         }
 
@@ -250,22 +274,43 @@ namespace Minsk.CodeAnalysis
             }
         }
 
-        private object EvaluateAssignmentExpression(BoundAssignmentExpression a)
+        private void Assign(VariableSymbol variable, object value)
         {
-            var value = EvaluateExpression(a.Expression);
-            _variables[a.Variable] = value;
-
-            return value;
+            if (variable.Kind == SymbolKind.GlobalVariable)
+            {
+                _globals[variable] = value;
+            }
+            else
+            {
+                var locals = _locals.Peek();
+                locals[variable] = value;
+            }
         }
 
         private object EvaluateVariableExpression(BoundVariableExpression v)
         {
-            return _variables[v.Variable];
+            if (v.Variable.Kind == SymbolKind.GlobalVariable)
+            {
+                return _globals[v.Variable];
+            }
+            else
+            {
+                var locals = _locals.Peek();
+                return locals[v.Variable];
+            }
         }
 
         private static object EvaluateLiteralExpression(BoundLiteralExpression n)
         {
             return n.Value;
+        }
+
+        private object EvaluateAssignmentExpression(BoundAssignmentExpression assignmentExpression)
+        {
+            var value = EvaluateExpression(assignmentExpression.Expression);
+            Assign(assignmentExpression.Variable, value);
+
+            return value;
         }
     }
 }
