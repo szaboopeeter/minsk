@@ -7,6 +7,6 @@
 
         }
 
-        public override SymbolKind Kind => SymbolKind.ParameterSymbol;
+        public override SymbolKind Kind => SymbolKind.Parameter;
     }
 }

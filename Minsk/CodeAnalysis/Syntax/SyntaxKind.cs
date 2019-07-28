@@ -38,6 +38,7 @@
         ElseKeyword,
         FalseKeyword,
         ForKeyword,
+        FunctionKeyword,
         IfKeyword,
         LetKeyword,
         ToKeyword,
@@ -48,6 +49,9 @@
 
         // Nodes
         CompilationUnit,
+        GlobalStatement,
+        FunctionDeclaration,
+        Parameter,
         ElseClause,
         TypeClause,
 

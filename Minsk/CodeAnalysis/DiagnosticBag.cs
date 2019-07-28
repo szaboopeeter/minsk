@@ -73,6 +73,12 @@ namespace Minsk.CodeAnalysis
             Report(span, message);
         }
 
+        public void ReportParameterAlreadyDeclared(TextSpan span, string parameterName)
+        {
+            var message = $"A parameter with the name '{parameterName}' already exists.";
+            Report(span, message);
+        }
+
         public void ReportUndefinedType(TextSpan span, string name)
         {
             var message = $"Type '{name}' does not exist.";
@@ -80,7 +86,7 @@ namespace Minsk.CodeAnalysis
             Report(span, message);
         }
 
-        internal void ReportCannotConvert(TextSpan span, TypeSymbol fromType, TypeSymbol toType)
+        public void ReportCannotConvert(TextSpan span, TypeSymbol fromType, TypeSymbol toType)
         {
             var message = $"Cannot convert type '{fromType}' to '{toType}'.";
 
@@ -94,14 +100,14 @@ namespace Minsk.CodeAnalysis
             Report(span, message);
         }
 
-        internal void ReportSymbolAlreadyDeclared(TextSpan span, string name)
+        public void ReportSymbolAlreadyDeclared(TextSpan span, string name)
         {
             var message = $"Symbol '{name}' is already declared.";
 
             Report(span, message);
         }
 
-        internal void ReportCannotAssign(TextSpan span, string name)
+        public void ReportCannotAssign(TextSpan span, string name)
         {
             var message = $"Variable '{name}' is read-only and cannot be assigned to.";
 
@@ -132,6 +138,13 @@ namespace Minsk.CodeAnalysis
         public void ReportExpressionMustHaveValue(TextSpan span)
         {
             var message = "Expression must have a value.";
+
+            Report(span, message);
+        }
+
+        public void XXX_ReportFunctionsAreUnsupported(TextSpan span)
+        {
+            var message = "Functions with return values are unsupported.";
 
             Report(span, message);
         }
