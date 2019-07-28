@@ -18,6 +18,7 @@
         CloseParenthesisToken,
         OpenBraceToken,
         CloseBraceToken,
+        ColonToken,
         IdentifierToken,
         TildeToken,
         PipeToken,
@@ -48,6 +49,7 @@
         // Nodes
         CompilationUnit,
         ElseClause,
+        TypeClause,
 
         // Statements
         BlockStatement,
