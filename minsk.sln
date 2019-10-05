@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mc", "mc\mc.csproj", "{AE4B145B-6742-4995-B8A3-3CFEB6463F65}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mi", "mi\mi.csproj", "{AE4B145B-6742-4995-B8A3-3CFEB6463F65}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Minsk", "Minsk\Minsk.csproj", "{C70F8A1B-A04A-436B-89E2-C29C66E923C7}"
 EndProject
