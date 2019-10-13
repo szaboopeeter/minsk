@@ -251,16 +251,16 @@ namespace Minsk.CodeAnalysis.Binding
 
         private static void WriteConditionalGotoStatement(BoundConditionalGotoStatement node, IndentedTextWriter writer)
         {
-            writer.WritePunctuation("goto ");
+            writer.WriteKeyword("goto ");
             writer.WriteIdentifier(node.Label.Name);
-            writer.WritePunctuation(node.JumpIfTrue ? " if " : " unless ");
+            writer.WriteKeyword(node.JumpIfTrue ? " if " : " unless ");
             node.Condition.WriteTo(writer);
             writer.WriteLine();
         }
 
         private static void WriteGotoStatement(BoundGotoStatement node, IndentedTextWriter writer)
         {
-            writer.WritePunctuation("goto ");
+            writer.WriteKeyword("goto ");
             writer.WriteIdentifier(node.Label.Name);
             writer.WriteLine();
         }
