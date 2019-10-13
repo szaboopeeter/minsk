@@ -46,6 +46,8 @@
         VarKeyword,
         WhileKeyword,
         DoKeyword,
+        ContinueKeyword,
+        BreakKeyword,
 
         // Nodes
         CompilationUnit,
@@ -58,6 +60,8 @@
         // Statements
         BlockStatement,
         ExpressionStatement,
+        ContinueStatement,
+        BreakStatement,
         ForStatement,
         IfStatement,
         VariableDeclaration,

@@ -244,7 +244,7 @@ namespace Minsk.CodeAnalysis.Binding
                 return node;
             }
 
-            return new BoundForStatement(node.Variable, lowerBound, upperBound, body);
+            return new BoundForStatement(node.Variable, lowerBound, upperBound, body, node.BreakLabel, node.ContinueLabel);
         }
 
         protected virtual BoundStatement RewriteIfStatement(BoundIfStatement node)
@@ -271,7 +271,7 @@ namespace Minsk.CodeAnalysis.Binding
                 return node;
             }
 
-            return new BoundWhileStatement(condition, body);
+            return new BoundWhileStatement(condition, body, node.BreakLabel, node.ContinueLabel);
         }
 
         protected virtual BoundStatement RewriteDoWhileStatement(BoundDoWhileStatement node)
@@ -284,7 +284,7 @@ namespace Minsk.CodeAnalysis.Binding
                 return node;
             }
 
-            return new BoundDoWhileStatement(body, condition);
+            return new BoundDoWhileStatement(body, condition, node.BreakLabel, node.ContinueLabel);
         }
     }
 }
