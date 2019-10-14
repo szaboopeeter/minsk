@@ -1,12 +1,13 @@
 using System;
 using System.CodeDom.Compiler;
 using System.IO;
+using Minsk.CodeAnalysis.Syntax;
 
 namespace Minsk.IO
 {
     internal static class TextWriterExtensions
     {
-        public static bool IsConsoleOut(this TextWriter writer)
+        private static bool IsConsoleOut(this TextWriter writer)
         {
             if (writer == Console.Out)
             {
@@ -21,7 +22,7 @@ namespace Minsk.IO
             return false;
         }
 
-        public static void SetForegoround(this TextWriter writer, ConsoleColor color)
+        private static void SetForegoround(this TextWriter writer, ConsoleColor color)
         {
             if (writer.IsConsoleOut())
             {
@@ -29,7 +30,7 @@ namespace Minsk.IO
             }
         }
 
-        public static void ResetColor(this TextWriter writer)
+        private static void ResetColor(this TextWriter writer)
         {
             if (writer.IsConsoleOut())
             {
@@ -70,6 +71,21 @@ namespace Minsk.IO
             writer.SetForegoround(ConsoleColor.DarkGray);
             writer.Write(text);
             writer.ResetColor();
+        }
+
+        public static void WriteKeyword(this TextWriter writer, SyntaxKind kind)
+        {
+            writer.WriteKeyword(SyntaxFacts.GetText(kind));
+        }
+
+        public static void WriteSpace(this TextWriter writer)
+        {
+            writer.WritePunctuation(" ");
+        }
+
+        public static void WritePunctuation(this TextWriter writer, SyntaxKind kind)
+        {
+            writer.WritePunctuation(SyntaxFacts.GetText(kind));
         }
     }
 }
