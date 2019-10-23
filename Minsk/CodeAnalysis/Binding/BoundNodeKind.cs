@@ -3,25 +3,26 @@
     internal enum BoundNodeKind
     {
         // Expressions
-        LiteralExpression,
-        VariableExpression,
         AssignmentExpression,
-        UnaryExpression,
         BinaryExpression,
-        ErrorExpression,
         CallExpression,
         ConversionExpression,
+        ErrorExpression,
+        LiteralExpression,
+        UnaryExpression,
+        VariableExpression,
 
         // Statements
         BlockStatement,
-        VariableDeclaration,
-        IfStatement,
-        WhileStatement,
+        ConditionalGotoStatement,
         DoWhileStatement,
+        ExpressionStatement,
         ForStatement,
         GotoStatement,
-        ConditionalGotoStatement,
+        IfStatement,
         LabelStatement,
-        ExpressionStatement,
+        ReturnStatement,
+        VariableDeclaration,
+        WhileStatement,
     }
 }
