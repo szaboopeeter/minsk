@@ -1,4 +1,5 @@
 using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -54,10 +55,11 @@ namespace Minsk.CodeAnalysis.Binding
                 }
 
                 using (var stringWriter = new StringWriter())
+                using (var indentedWriter = new IndentedTextWriter(stringWriter))
                 {
                     foreach (var statement in Statements)
                     {
-                        statement.WriteTo(stringWriter);
+                        statement.WriteTo(indentedWriter);
                     }
                     return stringWriter.ToString();
                 }
@@ -287,7 +289,7 @@ namespace Minsk.CodeAnalysis.Binding
 
         public void WriteTo(TextWriter writer)
         {
-            string Quote(string text) => $"\"{text.Replace("\"", "\\\"")}\"";
+            string Quote(string text) => $"\"{text.TrimEnd().Replace("\\", "\\\\").Replace("\"", "\\\"").Replace(Environment.NewLine, "\\l")}\"";
 
             writer.WriteLine("digraph G {");
 
@@ -302,7 +304,7 @@ namespace Minsk.CodeAnalysis.Binding
             foreach (var block in Blocks)
             {
                 var id = blockIds[block];
-                var label = Quote(block.ToString().Replace(Environment.NewLine, "\\l"));
+                var label = Quote(block.ToString());
                 writer.WriteLine($"    {id} [label = {label}, shape = box]");
             }
 
@@ -331,9 +333,9 @@ namespace Minsk.CodeAnalysis.Binding
             var graph = Create(body);
             foreach (var branch in graph.End.Incoming)
             {
-                var lastStatement = branch.From.Statements.Last();
+                var lastStatement = branch.From.Statements.LastOrDefault();
 
-                if (lastStatement.Kind != BoundNodeKind.ReturnStatement)
+                if (lastStatement == null || lastStatement.Kind != BoundNodeKind.ReturnStatement)
                 {
                     return false;
                 }

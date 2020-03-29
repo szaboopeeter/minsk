@@ -66,10 +66,16 @@ namespace Minsk.CodeAnalysis
             Report(span, message);
         }
 
-        public void ReportUndefinedName(TextSpan span, string name)
+        public void ReportUndefinedVariable(TextSpan span, string name)
         {
             var message = $"Variable '{name}' does not exist.";
 
+            Report(span, message);
+        }
+
+        public void ReportNotAVariable(TextSpan span, string name)
+        {
+            var message = $"'{name}' is not a variable.";
             Report(span, message);
         }
 
@@ -127,6 +133,12 @@ namespace Minsk.CodeAnalysis
             Report(span, message);
         }
 
+        public void ReportNotAFunction(TextSpan span, string name)
+        {
+            var message = $"'{name}' is not a function.";
+            Report(span, message);
+        }
+
         public void ReportWrongArgumentCount(TextSpan span, string name, int expectedCount, int actualCount)
         {
             var message = $"Function '{name}' requires {expectedCount} arguments, but it was given {actualCount}.";
@@ -150,7 +162,7 @@ namespace Minsk.CodeAnalysis
 
         public void ReportInvalidBreakOrContinue(TextSpan span, string text)
         {
-            var message = $"The keyword {text} can only be used inside loops.";
+            var message = $"The keyword '{text}' can only be used inside loops.";
             Report(span, message);
         }
 
@@ -162,7 +174,7 @@ namespace Minsk.CodeAnalysis
 
         public void ReportMissingReturnExpression(TextSpan span, TypeSymbol returnType)
         {
-            var message = $"An expression of type '{returnType}' expected.";
+            var message = $"An expression of type '{returnType}' is expected.";
             Report(span, message);
         }
 
