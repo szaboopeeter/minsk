@@ -333,9 +333,9 @@ namespace Minsk.CodeAnalysis.Binding
             var graph = Create(body);
             foreach (var branch in graph.End.Incoming)
             {
-                var lastStatement = branch.From.Statements.Last();
+                var lastStatement = branch.From.Statements.LastOrDefault();
 
-                if (lastStatement.Kind != BoundNodeKind.ReturnStatement)
+                if (lastStatement == null || lastStatement.Kind != BoundNodeKind.ReturnStatement)
                 {
                     return false;
                 }
