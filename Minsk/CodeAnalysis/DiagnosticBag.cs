@@ -150,7 +150,7 @@ namespace Minsk.CodeAnalysis
 
         public void ReportInvalidBreakOrContinue(TextSpan span, string text)
         {
-            var message = $"The keyword {text} can only be used inside loops.";
+            var message = $"The keyword '{text}' can only be used inside loops.";
             Report(span, message);
         }
 
