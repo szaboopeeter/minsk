@@ -20,7 +20,7 @@
         "--project",
         "${workspaceFolder}/mc/mc.csproj",
         "--",
-        "${file}"
+        "${fileDirname}"
       ],
       "problemMatcher": {
         "fileLocation": "absolute",

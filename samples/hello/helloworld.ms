@@ -1,3 +1,2 @@
-print("What is your name?")
-let name = input()
+let name = getName()
 print("Hello " + name + "!")

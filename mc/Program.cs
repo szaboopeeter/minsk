@@ -24,20 +24,33 @@ namespace Minsk
                 System.Console.WriteLine("Error: only one path supported right now.");
             }
 
-            var path = args.Single();
+            var paths = GetFilePaths(args);
+            var syntaxTrees = new List<SyntaxTree>(paths.Count());
+            var hasErrors = false;
 
-            if (!File.Exists(path))
+            foreach (var path in paths)
             {
-                System.Console.WriteLine($"error: file '{path}' does not exist");
+                if (!File.Exists(path))
+                {
+                    System.Console.WriteLine($"error: file '{path}' does not exist");
+                    hasErrors = true;
+                    continue;
+                }
+                var syntaxTree = SyntaxTree.Load(path);
+                syntaxTrees.Add(syntaxTree);
             }
-            var syntaxTree = SyntaxTree.Load(path);
 
-            var compilation = new Compilation(syntaxTree);
+            if (hasErrors)
+            {
+                return;
+            }
+
+            var compilation = new Compilation(syntaxTrees.ToArray());
             var result = compilation.Evaluate(new Dictionary<VariableSymbol, object>());
 
             if (result.Diagnostics.Any())
             {
-                Console.Error.WriteDiagnostics(result.Diagnostics, syntaxTree);
+                Console.Error.WriteDiagnostics(result.Diagnostics);
             }
             else
             {
@@ -46,6 +59,25 @@ namespace Minsk
                     Console.WriteLine(result.Value);
                 }
             }
+        }
+
+        private static IEnumerable<string> GetFilePaths(IEnumerable<string> paths)
+        {
+            var result = new SortedSet<string>();
+
+            foreach (var path in paths)
+            {
+                if (Directory.Exists(path))
+                {
+                    result.UnionWith(Directory.EnumerateFiles(path, "*.ms", SearchOption.AllDirectories));
+                }
+                else
+                {
+                    result.Add(path);
+                }
+            }
+
+            return result;
         }
     }
 }
