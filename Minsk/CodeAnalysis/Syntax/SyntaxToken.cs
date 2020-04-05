@@ -1,12 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Minsk.CodeAnalysis.Text;
+﻿using Minsk.CodeAnalysis.Text;
 
 namespace Minsk.CodeAnalysis.Syntax
 {
     public class SyntaxToken : SyntaxNode
     {
-        public SyntaxToken(SyntaxKind kind, int position, string text, object value)
+        public SyntaxToken(SyntaxTree syntaxTree, SyntaxKind kind, int position, string text, object value) : base(syntaxTree)
         {
             Kind = kind;
             Position = position;

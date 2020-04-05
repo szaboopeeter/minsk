@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		azure-pipelines.yml = azure-pipelines.yml
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mc", "mc\mc.csproj", "{88295A3C-D0D0-4E83-9408-1EDB3A3FD263}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,5 +65,17 @@ Global
 		{3D2C30CE-701E-4962-A664-26A094F5B428}.Release|x64.Build.0 = Release|Any CPU
 		{3D2C30CE-701E-4962-A664-26A094F5B428}.Release|x86.ActiveCfg = Release|Any CPU
 		{3D2C30CE-701E-4962-A664-26A094F5B428}.Release|x86.Build.0 = Release|Any CPU
+		{88295A3C-D0D0-4E83-9408-1EDB3A3FD263}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88295A3C-D0D0-4E83-9408-1EDB3A3FD263}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88295A3C-D0D0-4E83-9408-1EDB3A3FD263}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{88295A3C-D0D0-4E83-9408-1EDB3A3FD263}.Debug|x64.Build.0 = Debug|Any CPU
+		{88295A3C-D0D0-4E83-9408-1EDB3A3FD263}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{88295A3C-D0D0-4E83-9408-1EDB3A3FD263}.Debug|x86.Build.0 = Debug|Any CPU
+		{88295A3C-D0D0-4E83-9408-1EDB3A3FD263}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88295A3C-D0D0-4E83-9408-1EDB3A3FD263}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88295A3C-D0D0-4E83-9408-1EDB3A3FD263}.Release|x64.ActiveCfg = Release|Any CPU
+		{88295A3C-D0D0-4E83-9408-1EDB3A3FD263}.Release|x64.Build.0 = Release|Any CPU
+		{88295A3C-D0D0-4E83-9408-1EDB3A3FD263}.Release|x86.ActiveCfg = Release|Any CPU
+		{88295A3C-D0D0-4E83-9408-1EDB3A3FD263}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
