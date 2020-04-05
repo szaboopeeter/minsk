@@ -90,7 +90,7 @@ namespace Minsk.Tests.CodeAnalysis.Syntax
             Assert.Equal(SyntaxKind.StringToken, token.Kind);
             Assert.Equal(text, token.Text);
 
-            Assert.Equal(new TextSpan(0, 1), diagnostic.Span);
+            Assert.Equal(new TextSpan(0, 1), diagnostic.Location.Span);
             Assert.Equal("Unterminated string literal.", diagnostic.Message);
         }
 

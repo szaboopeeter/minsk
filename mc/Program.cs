@@ -26,8 +26,11 @@ namespace Minsk
 
             var path = args.Single();
 
-            var text = File.ReadAllText(path);
-            var syntaxTree = SyntaxTree.Parse(text);
+            if (!File.Exists(path))
+            {
+                System.Console.WriteLine($"error: file '{path}' does not exist");
+            }
+            var syntaxTree = SyntaxTree.Load(path);
 
             var compilation = new Compilation(syntaxTree);
             var result = compilation.Evaluate(new Dictionary<VariableSymbol, object>());
