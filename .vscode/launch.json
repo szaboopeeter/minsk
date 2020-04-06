@@ -9,9 +9,9 @@
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
-      "program": "${workspaceFolder}/msc/bin/Debug/netcoreapp3.1/msc.dll",
+      "program": "${workspaceFolder}/msi/bin/Debug/netcoreapp3.1/msi.dll",
       "args": [],
-      "cwd": "${workspaceFolder}/mc",
+      "cwd": "${workspaceFolder}/msi",
       "console": "externalTerminal",
       "stopAtEntry": false,
       "internalConsoleOptions": "openOnSessionStart"
