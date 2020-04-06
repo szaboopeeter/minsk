@@ -26,6 +26,8 @@ namespace Minsk.CodeAnalysis
 
         public Compilation Previous { get; }
         public ImmutableArray<SyntaxTree> SyntaxTrees { get; }
+        public ImmutableArray<FunctionSymbol> Functions => GlobalScope.Functions;
+        public ImmutableArray<VariableSymbol> Variables => GlobalScope.Variables;
 
         internal BoundGlobalScope GlobalScope
         {
@@ -38,6 +40,33 @@ namespace Minsk.CodeAnalysis
                 }
 
                 return _globalScope;
+            }
+        }
+
+        public IEnumerable<Symbol> GetSymbols()
+        {
+            var sumbission = this;
+            var seenSymbolNames = new HashSet<string>();
+
+            while (sumbission != null)
+            {
+                foreach (var function in sumbission.Functions)
+                {
+                    if (seenSymbolNames.Add(function.Name))
+                    {
+                        yield return function;
+                    }
+                }
+
+                foreach (var variable in sumbission.Variables)
+                {
+                    if (seenSymbolNames.Add(variable.Name))
+                    {
+                        yield return variable;
+                    }
+                }
+
+                sumbission = sumbission.Previous;
             }
         }
 
@@ -78,6 +107,19 @@ namespace Minsk.CodeAnalysis
             return new EvaluationResult(ImmutableArray<Diagnostic>.Empty, value);
         }
 
+        public void EmitTree(FunctionSymbol symbol, TextWriter writer)
+        {
+            var program = Binder.BindProgram(GlobalScope);
+            if (!program.Functions.TryGetValue(symbol, out var body))
+            {
+                return;
+            }
+
+            symbol.WriteTo(writer);
+            writer.WriteLine();
+            body.WriteTo(writer);
+        }
+
         public void EmitTree(TextWriter writer)
         {
             var program = Binder.BindProgram(GlobalScope);
@@ -96,6 +138,7 @@ namespace Minsk.CodeAnalysis
                     }
 
                     functionBody.Key.WriteTo(writer);
+                    writer.WriteLine();
                     functionBody.Value.WriteTo(writer);
                 }
             }
