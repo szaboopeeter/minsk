@@ -145,13 +145,6 @@ namespace Minsk.CodeAnalysis
             Report(location, message);
         }
 
-        public void ReportWrongArgumentType(TextLocation location, string name, string parameterName, TypeSymbol expectedType, TypeSymbol actualType)
-        {
-            var message = $"Parameter '{parameterName}' of function '{name}' requires a value of type '{expectedType}', but was given '{actualType}'.";
-
-            Report(location, message);
-        }
-
         public void ReportExpressionMustHaveValue(TextLocation location)
         {
             var message = "Expression must have a value.";
