@@ -542,7 +542,7 @@ namespace Minsk
 
         protected abstract void EvaluateSubmission(string text);
 
-        [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
+        [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
         protected sealed class MetaCommandAttribute : Attribute
         {
             public MetaCommandAttribute(string name, string description)
@@ -575,10 +575,30 @@ namespace Minsk
             var maxNameLength = _metaCommands.Max(mc => mc.Name.Length);
             foreach (var metaCommand in _metaCommands.OrderBy(mc => mc.Name))
             {
-                var paddedName = metaCommand.Name.PadRight(maxNameLength);
+                var metaParams = metaCommand.Method.GetParameters();
+                if (metaParams.Length == 0)
+                {
+                    var paddedName = metaCommand.Name.PadRight(maxNameLength);
 
-                Console.Out.WritePunctuation("#");
-                Console.Out.WriteIdentifier(paddedName);
+                    Console.Out.WritePunctuation("#");
+                    Console.Out.WriteIdentifier(paddedName);
+                }
+                else
+                {
+                    Console.Out.WritePunctuation("#");
+                    Console.Out.WriteIdentifier(metaCommand.Name);
+                    foreach (var pi in metaParams)
+                    {
+                        Console.Out.WriteSpace();
+                        Console.Out.WritePunctuation("<");
+                        Console.Out.WriteIdentifier(pi.Name);
+                        Console.Out.WritePunctuation(">");
+                    }
+                    Console.Out.WriteLine();
+                    Console.Out.WriteSpace();
+                    for (int _ = 0; _ < maxNameLength; _++)
+                        Console.Out.WriteSpace();
+                }
                 Console.Out.WriteSpace();
                 Console.Out.WriteSpace();
                 Console.Out.WriteSpace();
