@@ -15,6 +15,7 @@ namespace Minsk
         private bool _showTree;
         private bool _showProgram;
         private bool _loadingSubmissions = false;
+        private static readonly Compilation emptyCompilation = new Compilation();
         private readonly Dictionary<VariableSymbol, object> _variables = new Dictionary<VariableSymbol, object>();
 
         public MinskRepl()
@@ -53,12 +54,8 @@ namespace Minsk
         [MetaCommand("ls", "Lists all symbols")]
         private void EvaluateLs()
         {
-            if (_previous == null)
-            {
-                return;
-            }
-
-            var symbols = _previous.GetSymbols().OrderBy(s => s.Kind).ThenBy(s => s.Name);
+            var compilation = _previous ?? emptyCompilation;
+            var symbols = compilation.GetSymbols().OrderBy(s => s.Kind).ThenBy(s => s.Name);
 
             foreach (var symbol in symbols)
             {
@@ -86,12 +83,9 @@ namespace Minsk
         [MetaCommand("dump", "Shows bound tree of a given function")]
         private void EvaluateDump(string functionName)
         {
-            if (_previous == null)
-            {
-                return;
-            }
+            var compilation = _previous ?? emptyCompilation;
+            var symbol = compilation.GetSymbols().OfType<FunctionSymbol>().SingleOrDefault(f => f.Name == functionName);
 
-            var symbol = _previous.GetSymbols().OfType<FunctionSymbol>().SingleOrDefault(f => f.Name == functionName);
             if (symbol == null)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -100,7 +94,7 @@ namespace Minsk
                 return;
             }
 
-            _previous.EmitTree(symbol, Console.Out);
+            compilation.EmitTree(symbol, Console.Out);
         }
 
         protected override bool IsCompleteSubmission(string text)
