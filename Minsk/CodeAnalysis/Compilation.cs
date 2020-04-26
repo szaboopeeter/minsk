@@ -88,6 +88,12 @@ namespace Minsk.CodeAnalysis
             return new Compilation(this, syntaxTree);
         }
 
+        private BoundProgram GetProgram()
+        {
+            var previous = Previous == null ? null : Previous.GetProgram();
+            return Binder.BindProgram(previous, GlobalScope);
+        }
+
         public EvaluationResult Evaluate(Dictionary<VariableSymbol, object> variables)
         {
             var parseDigagnostics = SyntaxTrees.SelectMany(st => st.Diagnostics);
@@ -97,7 +103,7 @@ namespace Minsk.CodeAnalysis
                 return new EvaluationResult(diagnostics.ToImmutableArray(), null);
             }
 
-            var program = Binder.BindProgram(GlobalScope);
+            var program = GetProgram();
 
             var appPath = Environment.GetCommandLineArgs()[0];
             var appDirectory = Path.GetDirectoryName(appPath);
@@ -122,7 +128,7 @@ namespace Minsk.CodeAnalysis
 
         public void EmitTree(FunctionSymbol symbol, TextWriter writer)
         {
-            var program = Binder.BindProgram(GlobalScope);
+            var program = GetProgram();
 
             symbol.WriteTo(writer);
             writer.WriteLine();
@@ -137,7 +143,7 @@ namespace Minsk.CodeAnalysis
 
         public void EmitTree(TextWriter writer)
         {
-            var program = Binder.BindProgram(GlobalScope);
+            var program = GetProgram();
 
             if (program.Statement.Statements.Any())
             {
