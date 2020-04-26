@@ -15,7 +15,7 @@ namespace Minsk
         private bool _showTree;
         private bool _showProgram;
         private bool _loadingSubmissions = false;
-        private static readonly Compilation emptyCompilation = new Compilation();
+        private static readonly Compilation emptyCompilation = Compilation.CreateScript(null);
         private readonly Dictionary<VariableSymbol, object> _variables = new Dictionary<VariableSymbol, object>();
 
         public MinskRepl()
@@ -130,7 +130,7 @@ namespace Minsk
         {
             var syntaxTree = SyntaxTree.Parse(text);
 
-            var compilation = _previous == null ? new Compilation(syntaxTree) : _previous.ContinueWith(syntaxTree);
+            var compilation = Compilation.CreateScript(_previous, syntaxTree);
 
             if (_showTree)
             {

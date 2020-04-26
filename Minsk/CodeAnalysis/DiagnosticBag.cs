@@ -182,5 +182,11 @@ namespace Minsk.CodeAnalysis
             var message = "The 'return' keyword can only be used inside of functions.";
             Report(location, message);
         }
+
+        internal void ReportInvalidExpressionStatement(TextLocation location)
+        {
+            var message = "Only assignment and call expressions can be used as a statement.";
+            Report(location, message);
+        }
     }
 }
