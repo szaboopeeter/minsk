@@ -27,7 +27,7 @@ namespace Minsk
             var methods = GetType().GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
             foreach (var method in methods)
             {
-                var attribute = (MetaCommandAttribute)method.GetCustomAttribute(typeof(MetaCommandAttribute));
+                var attribute = method.GetCustomAttribute<MetaCommandAttribute>();
 
                 if (attribute == null)
                 {
@@ -66,7 +66,7 @@ namespace Minsk
         {
             private readonly Action<string> _lineRenderer;
             private readonly ObservableCollection<string> _submissionDocument;
-            private readonly int _cursorTop;
+            private int _cursorTop;
             private int _renderedLineCount;
             private int _currentLine;
             private int _currentCharacter;
@@ -93,6 +93,16 @@ namespace Minsk
 
                 foreach (var line in _submissionDocument)
                 {
+                    if (_cursorTop + lineCount >= Console.WindowHeight)
+                    {
+                        Console.SetCursorPosition(0, Console.WindowHeight - 1);
+                        Console.WriteLine();
+                        if (_cursorTop > 0)
+                        {
+                            _cursorTop--;
+                        }
+                    }
+
                     Console.SetCursorPosition(0, _cursorTop + lineCount);
                     Console.ForegroundColor = ConsoleColor.Green;
 
@@ -107,7 +117,7 @@ namespace Minsk
 
                     Console.ResetColor();
                     _lineRenderer(line);
-                    Console.Write(new string(' ', Console.WindowWidth - line.Length));
+                    Console.Write(new string(' ', Console.WindowWidth - line.Length - 2));
                     lineCount++;
                 }
 
@@ -526,7 +536,7 @@ namespace Minsk
             var parameters = command.Method.GetParameters();
             if (args.Count != parameters.Length)
             {
-                var parameterNames = string.Join(", ", parameters.Select(p => $"<{p.Name}>"));
+                var parameterNames = string.Join(" ", parameters.Select(p => $"<{p.Name}>"));
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine($"error: Invalid number of arguments");
                 Console.WriteLine($"usage: #{command.Name} {parameterNames}");
@@ -534,14 +544,15 @@ namespace Minsk
                 return;
             }
 
-            command.Method.Invoke(this, args.ToArray());
+            var instance = command.Method.IsStatic ? null : this;
+            command.Method.Invoke(instance, args.ToArray());
         }
 
         protected abstract bool IsCompleteSubmission(string text);
 
         protected abstract void EvaluateSubmission(string text);
 
-        [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
+        [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
         protected sealed class MetaCommandAttribute : Attribute
         {
             public MetaCommandAttribute(string name, string description)
@@ -574,10 +585,30 @@ namespace Minsk
             var maxNameLength = _metaCommands.Max(mc => mc.Name.Length);
             foreach (var metaCommand in _metaCommands.OrderBy(mc => mc.Name))
             {
-                var paddedName = metaCommand.Name.PadRight(maxNameLength);
+                var metaParams = metaCommand.Method.GetParameters();
+                if (metaParams.Length == 0)
+                {
+                    var paddedName = metaCommand.Name.PadRight(maxNameLength);
 
-                Console.Out.WritePunctuation("#");
-                Console.Out.WriteIdentifier(paddedName);
+                    Console.Out.WritePunctuation("#");
+                    Console.Out.WriteIdentifier(paddedName);
+                }
+                else
+                {
+                    Console.Out.WritePunctuation("#");
+                    Console.Out.WriteIdentifier(metaCommand.Name);
+                    foreach (var pi in metaParams)
+                    {
+                        Console.Out.WriteSpace();
+                        Console.Out.WritePunctuation("<");
+                        Console.Out.WriteIdentifier(pi.Name);
+                        Console.Out.WritePunctuation(">");
+                    }
+                    Console.Out.WriteLine();
+                    Console.Out.WriteSpace();
+                    for (int _ = 0; _ < maxNameLength; _++)
+                        Console.Out.WriteSpace();
+                }
                 Console.Out.WriteSpace();
                 Console.Out.WriteSpace();
                 Console.Out.WriteSpace();

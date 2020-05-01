@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using Minsk.CodeAnalysis.Symbols;
 using Minsk.CodeAnalysis.Syntax;
@@ -78,6 +77,24 @@ namespace Minsk.CodeAnalysis
             Report(location, message);
         }
 
+        public void ReportOnlyOneFileCanHaveGlobalStatements(TextLocation location)
+        {
+            var message = $"At most one file can have global statements.";
+            Report(location, message);
+        }
+
+        public void ReportMainMustHaveCorrectSignature(TextLocation location)
+        {
+            var message = $"'main' must not take arguments or return anything.";
+            Report(location, message);
+        }
+
+        public void ReportCannotMixMainAndGlobalStatements(TextLocation location)
+        {
+            var message = $"Cannot declare a main function when global statements are used.";
+            Report(location, message);
+        }
+
         public void ReportParameterAlreadyDeclared(TextLocation location, string parameterName)
         {
             var message = $"A parameter with the name '{parameterName}' already exists.";
@@ -145,13 +162,6 @@ namespace Minsk.CodeAnalysis
             Report(location, message);
         }
 
-        public void ReportWrongArgumentType(TextLocation location, string name, string parameterName, TypeSymbol expectedType, TypeSymbol actualType)
-        {
-            var message = $"Parameter '{parameterName}' of function '{name}' requires a value of type '{expectedType}', but was given '{actualType}'.";
-
-            Report(location, message);
-        }
-
         public void ReportExpressionMustHaveValue(TextLocation location)
         {
             var message = "Expression must have a value.";
@@ -177,9 +187,9 @@ namespace Minsk.CodeAnalysis
             Report(location, message);
         }
 
-        public void ReportInvalidReturn(TextLocation location)
+        public void ReportInvalidExpressionStatement(TextLocation location)
         {
-            var message = "The 'return' keyword can only be used inside of functions.";
+            var message = "Only assignment and call expressions can be used as a statement.";
             Report(location, message);
         }
     }

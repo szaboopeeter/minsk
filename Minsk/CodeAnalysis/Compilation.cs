@@ -5,27 +5,37 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using Minsk.CodeAnalysis.Binding;
-using Minsk.CodeAnalysis.Lowering;
 using Minsk.CodeAnalysis.Symbols;
 using Minsk.CodeAnalysis.Syntax;
+using ReflectionBindingFlags = System.Reflection.BindingFlags;
 
 namespace Minsk.CodeAnalysis
 {
     public class Compilation
     {
         private BoundGlobalScope _globalScope;
-        public Compilation(params SyntaxTree[] syntaxTrees) : this(null, syntaxTrees)
-        {
-        }
 
-        private Compilation(Compilation previous, params SyntaxTree[] syntaxTrees)
+        private Compilation(bool isScript, Compilation previous, params SyntaxTree[] syntaxTrees)
         {
+            IsScript = isScript;
             Previous = previous;
             SyntaxTrees = syntaxTrees.ToImmutableArray();
         }
 
+        public static Compilation Create(params SyntaxTree[] syntaxTrees)
+        {
+            return new Compilation(isScript: false, previous: null, syntaxTrees);
+        }
+
+        public static Compilation CreateScript(Compilation previous, params SyntaxTree[] syntaxTrees)
+        {
+            return new Compilation(isScript: true, previous, syntaxTrees);
+        }
+
+        public bool IsScript { get; }
         public Compilation Previous { get; }
         public ImmutableArray<SyntaxTree> SyntaxTrees { get; }
+        public FunctionSymbol MainFunction => GlobalScope.MainFunction;
         public ImmutableArray<FunctionSymbol> Functions => GlobalScope.Functions;
         public ImmutableArray<VariableSymbol> Variables => GlobalScope.Variables;
 
@@ -35,7 +45,7 @@ namespace Minsk.CodeAnalysis
             {
                 if (_globalScope == null)
                 {
-                    var globalScope = Binder.BindGlobalScope(Previous?.GlobalScope, SyntaxTrees);
+                    var globalScope = Binder.BindGlobalScope(IsScript, Previous?.GlobalScope, SyntaxTrees);
                     Interlocked.CompareExchange(ref _globalScope, globalScope, null);
                 }
 
@@ -50,6 +60,16 @@ namespace Minsk.CodeAnalysis
 
             while (sumbission != null)
             {
+                const ReflectionBindingFlags bindingFlags =
+                    ReflectionBindingFlags.Static |
+                    ReflectionBindingFlags.Public |
+                    ReflectionBindingFlags.NonPublic;
+                var builtinFunctions = typeof(BuiltinFunctions)
+                    .GetFields(bindingFlags)
+                    .Where(fi => fi.FieldType == typeof(FunctionSymbol))
+                    .Select(fi => (FunctionSymbol)fi.GetValue(obj: null))
+                    .ToList();
+
                 foreach (var function in sumbission.Functions)
                 {
                     if (seenSymbolNames.Add(function.Name))
@@ -66,13 +86,18 @@ namespace Minsk.CodeAnalysis
                     }
                 }
 
+                foreach (var builtin in builtinFunctions)
+                    if (seenSymbolNames.Add(builtin.Name))
+                        yield return builtin;
+
                 sumbission = sumbission.Previous;
             }
         }
 
-        public Compilation ContinueWith(SyntaxTree syntaxTree)
+        private BoundProgram GetProgram()
         {
-            return new Compilation(this, syntaxTree);
+            var previous = Previous == null ? null : Previous.GetProgram();
+            return Binder.BindProgram(IsScript, previous, GlobalScope);
         }
 
         public EvaluationResult Evaluate(Dictionary<VariableSymbol, object> variables)
@@ -84,17 +109,17 @@ namespace Minsk.CodeAnalysis
                 return new EvaluationResult(diagnostics.ToImmutableArray(), null);
             }
 
-            var program = Binder.BindProgram(GlobalScope);
+            var program = GetProgram();
 
-            var appPath = Environment.GetCommandLineArgs()[0];
-            var appDirectory = Path.GetDirectoryName(appPath);
-            var cfgPath = Path.Combine(appDirectory, "cfg.dot");
-            var cfgStatement = !program.Statement.Statements.Any() && program.Functions.Any() ? program.Functions.Last().Value : program.Statement;
-            var cfg = ControlFlowGraph.Create(cfgStatement);
-            using (var streamWriter = new StreamWriter(cfgPath))
-            {
-                cfg.WriteTo(streamWriter);
-            }
+            // var appPath = Environment.GetCommandLineArgs()[0];
+            // var appDirectory = Path.GetDirectoryName(appPath);
+            // var cfgPath = Path.Combine(appDirectory, "cfg.dot");
+            // var cfgStatement = !program.Statement.Statements.Any() && program.Functions.Any() ? program.Functions.Last().Value : program.Statement;
+            // var cfg = ControlFlowGraph.Create(cfgStatement);
+            // using (var streamWriter = new StreamWriter(cfgPath))
+            // {
+            //     cfg.WriteTo(streamWriter);
+            // }
 
             if (program.Diagnostics.Any())
             {
@@ -109,38 +134,30 @@ namespace Minsk.CodeAnalysis
 
         public void EmitTree(FunctionSymbol symbol, TextWriter writer)
         {
-            var program = Binder.BindProgram(GlobalScope);
+            var program = GetProgram();
+
+            symbol.WriteTo(writer);
+            writer.WriteLine();
+
             if (!program.Functions.TryGetValue(symbol, out var body))
             {
                 return;
             }
 
-            symbol.WriteTo(writer);
-            writer.WriteLine();
             body.WriteTo(writer);
         }
 
         public void EmitTree(TextWriter writer)
         {
-            var program = Binder.BindProgram(GlobalScope);
+            var program = GetProgram();
 
-            if (program.Statement.Statements.Any())
+            if (GlobalScope.MainFunction != null)
             {
-                program.Statement.WriteTo(writer);
+                EmitTree(GlobalScope.MainFunction, writer);
             }
-            else
+            else if (GlobalScope.ScriptFunction != null)
             {
-                foreach (var functionBody in program.Functions)
-                {
-                    if (!GlobalScope.Functions.Contains(functionBody.Key))
-                    {
-                        continue;
-                    }
-
-                    functionBody.Key.WriteTo(writer);
-                    writer.WriteLine();
-                    functionBody.Value.WriteTo(writer);
-                }
+                EmitTree(GlobalScope.ScriptFunction, writer);
             }
         }
     }
