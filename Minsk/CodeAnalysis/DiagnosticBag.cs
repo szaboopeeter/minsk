@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Minsk.CodeAnalysis.Symbols;
 using Minsk.CodeAnalysis.Syntax;
@@ -190,6 +191,12 @@ namespace Minsk.CodeAnalysis
         public void ReportInvalidExpressionStatement(TextLocation location)
         {
             var message = "Only assignment and call expressions can be used as a statement.";
+            Report(location, message);
+        }
+
+        internal void ReportInvalidReturnWithValueInGlobalStatements(TextLocation location)
+        {
+            var message = "The 'return' keyword  cannot be followed by an expression in global statements.";
             Report(location, message);
         }
     }

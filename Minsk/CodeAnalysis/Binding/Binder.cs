@@ -312,7 +312,7 @@ namespace Minsk.CodeAnalysis.Binding
                 else if (expression != null)
                 {
                     // Main does not support return values
-                    _diagnostics.ReportInvalidReturnExpression(syntax.Expression.Location, _function.Name);
+                    _diagnostics.ReportInvalidReturnWithValueInGlobalStatements(syntax.Expression.Location);
                 }
             }
             else
