@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Minsk.CodeAnalysis.Symbols;
 using Minsk.CodeAnalysis.Syntax;
 using Minsk.CodeAnalysis.Text;
+using Mono.Cecil;
 
 namespace Minsk.CodeAnalysis
 {
@@ -30,6 +32,12 @@ namespace Minsk.CodeAnalysis
         {
             var message = $"The number {text} isn't valid {type}.";
             Report(location, message);
+        }
+
+        public void ReportInvalidReference(string path)
+        {
+            var message = $"The reference is not a valid .NET assembly: ${path}.";
+            Report(default, message);
         }
 
         public void ReportBadCharacter(TextLocation location, char character)
@@ -63,6 +71,26 @@ namespace Minsk.CodeAnalysis
             var message = $"Binary operator '{operatorText}' is not defined for types '{leftOperandType}' and '{rightOperandType}'.";
 
             Report(location, message);
+        }
+
+        public void ReportBuiltInTypeAmbigous(string minskTypeName, string metadataName, TypeDefinition[] foundTypes)
+        {
+            var assemblyNames = foundTypes.Select(t => t.Module.Assembly.Name.Name);
+            var assemblyNameList = string.Join(", ", assemblyNames);
+
+            var message = minskTypeName == null
+                        ? $"The required type '{metadataName}' was found in multiple references: {assemblyNameList}."
+                        : $"The required type '{minskTypeName}' ({metadataName}) was found in multiple references: {assemblyNameList}.";
+
+            Report(default, message);
+        }
+
+        public void ReportRequiredTypeNotFound(string minskTypeName, string metadataName)
+        {
+            var message = minskTypeName == null
+            ? $"The required type '{metadataName}' cannot be resolved among the given references."
+            : $"The required type '{minskTypeName}' ({metadataName}) cannot be resolved among the given references.";
+            Report(default, message);
         }
 
         public void ReportUndefinedVariable(TextLocation location, string name)
@@ -100,6 +128,13 @@ namespace Minsk.CodeAnalysis
         {
             var message = $"A parameter with the name '{parameterName}' already exists.";
             Report(location, message);
+        }
+
+        public void ReportRequiredMethodNotFound(string typeName, string methodName, string[] parameterTypeNames)
+        {
+            var parameterTypeNameList = string.Join(", ", parameterTypeNames);
+            var message = $"The required method '{typeName}.{methodName}({parameterTypeNameList})' cannot be resolved among the given references.";
+            Report(default, message);
         }
 
         public void ReportUndefinedType(TextLocation location, string name)
@@ -194,7 +229,7 @@ namespace Minsk.CodeAnalysis
             Report(location, message);
         }
 
-        internal void ReportInvalidReturnWithValueInGlobalStatements(TextLocation location)
+        public void ReportInvalidReturnWithValueInGlobalStatements(TextLocation location)
         {
             var message = "The 'return' keyword  cannot be followed by an expression in global statements.";
             Report(location, message);
