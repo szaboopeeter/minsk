@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using Minsk.CodeAnalysis.Binding;
+using Minsk.CodeAnalysis.Emit;
 using Minsk.CodeAnalysis.Symbols;
 using Minsk.CodeAnalysis.Syntax;
 using ReflectionBindingFlags = System.Reflection.BindingFlags;
@@ -159,6 +160,13 @@ namespace Minsk.CodeAnalysis
             {
                 EmitTree(GlobalScope.ScriptFunction, writer);
             }
+        }
+
+        public ImmutableArray<Diagnostic> Emit(string moduleName, string[] references, string outputPath)
+        {
+            var program = GetProgram();
+
+            return Emitter.Emit(program, moduleName, references, outputPath);
         }
     }
 }
