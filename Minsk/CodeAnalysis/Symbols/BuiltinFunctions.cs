@@ -10,7 +10,7 @@ namespace Minsk.CodeAnalysis.Symbols
         public static readonly FunctionSymbol Print =
             new FunctionSymbol(
                 "print",
-                ImmutableArray.Create(new ParameterSymbol("text", TypeSymbol.String)),
+                ImmutableArray.Create(new ParameterSymbol("text", TypeSymbol.String, 0)),
                 TypeSymbol.Void);
 
         public static readonly FunctionSymbol Input =
@@ -22,7 +22,7 @@ namespace Minsk.CodeAnalysis.Symbols
         public static readonly FunctionSymbol Rnd =
             new FunctionSymbol(
                 "rnd",
-                ImmutableArray.Create(new ParameterSymbol("max", TypeSymbol.Int)),
+                ImmutableArray.Create(new ParameterSymbol("max", TypeSymbol.Int, 0)),
                 TypeSymbol.Int);
 
         internal static IEnumerable<FunctionSymbol> GetAll()
