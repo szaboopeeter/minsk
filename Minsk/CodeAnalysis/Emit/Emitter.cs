@@ -256,7 +256,10 @@ namespace Minsk.CodeAnalysis.Emit
 
         private void EmitAssignmentExpression(ILProcessor ilProcessor, BoundAssignmentExpression node)
         {
-            throw new NotImplementedException();
+            var variableDefinition = _locals[node.Variable];
+            EmitExpression(ilProcessor, node.Expression);
+            ilProcessor.Emit(OpCodes.Dup);
+            ilProcessor.Emit(OpCodes.Stloc, variableDefinition);
         }
 
         private void EmitGotoStatement(ILProcessor ilProcessor, BoundGotoStatement statement)
