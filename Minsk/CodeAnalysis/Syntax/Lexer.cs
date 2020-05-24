@@ -238,7 +238,7 @@ namespace Minsk.CodeAnalysis.Syntax
                     case '\n':
                         var span = new TextSpan(_start, 1);
                         var location = new TextLocation(_text, span);
-                        _diagnostics.ReportUndeterminedString(location);
+                        _diagnostics.ReportUnterminatedString(location);
                         done = true;
                         break;
                     case '"':

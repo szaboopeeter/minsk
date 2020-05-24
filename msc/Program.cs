@@ -57,6 +57,19 @@ namespace Minsk
             var syntaxTrees = new List<SyntaxTree>();
             var hasErrors = false;
 
+            foreach (var path in sourcePaths)
+            {
+                if (!File.Exists(path))
+                {
+                    Console.Error.WriteLine($"error: file '{path}' doesn't exist");
+                    hasErrors = true;
+                    continue;
+                }
+
+                var syntaxTree = SyntaxTree.Load(path);
+                syntaxTrees.Add(syntaxTree);
+            }
+
             foreach (var path in referencePaths)
             {
                 if (!File.Exists(path))
@@ -68,7 +81,9 @@ namespace Minsk
             }
 
             if (hasErrors)
+            {
                 return 1;
+            }
 
             var compilation = Compilation.Create(syntaxTrees.ToArray());
             var diagnostics = compilation.Emit(moduleName, referencePaths.ToArray(), outputPath);

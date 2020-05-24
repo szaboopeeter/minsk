@@ -120,8 +120,6 @@ namespace Minsk.IO
                 var span = diagnostic.Location.Span;
                 var lineIndex = text.GetLineIndex(span.Start);
                 var line = text.Lines[lineIndex];
-                var lineNumber = lineIndex + 1;
-                var character = span.Start - line.Start + 1;
 
                 writer.WriteLine();
 

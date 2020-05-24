@@ -19,7 +19,7 @@ namespace Minsk.CodeAnalysis
 
         public void AddRange(DiagnosticBag diagnostics)
         {
-            _diagnostics.AddRange(diagnostics);
+            _diagnostics.AddRange(diagnostics._diagnostics);
         }
 
         private void Report(TextLocation location, string message)
@@ -46,7 +46,7 @@ namespace Minsk.CodeAnalysis
             Report(location, message);
         }
 
-        public void ReportUndeterminedString(TextLocation location)
+        public void ReportUnterminatedString(TextLocation location)
         {
             var message = "Unterminated string literal.";
             Report(location, message);
@@ -66,14 +66,13 @@ namespace Minsk.CodeAnalysis
             Report(location, message);
         }
 
-        public void ReportUndefinedBinaryOperator(TextLocation location, string operatorText, TypeSymbol leftOperandType, TypeSymbol rightOperandType)
+        public void ReportUndefinedBinaryOperator(TextLocation location, string operatorText, TypeSymbol leftType, TypeSymbol rightType)
         {
-            var message = $"Binary operator '{operatorText}' is not defined for types '{leftOperandType}' and '{rightOperandType}'.";
-
+            var message = $"Binary operator '{operatorText}' is not defined for types '{leftType}' and '{rightType}'.";
             Report(location, message);
         }
 
-        public void ReportBuiltInTypeAmbigous(string minskTypeName, string metadataName, TypeDefinition[] foundTypes)
+        public void ReportRequiredTypeAmbiguous(string minskTypeName, string metadataName, TypeDefinition[] foundTypes)
         {
             var assemblyNames = foundTypes.Select(t => t.Module.Assembly.Name.Name);
             var assemblyNameList = string.Join(", ", assemblyNames);
