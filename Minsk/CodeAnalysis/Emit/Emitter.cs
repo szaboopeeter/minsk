@@ -13,11 +13,12 @@ namespace Minsk.CodeAnalysis.Emit
     internal sealed class Emitter
     {
         private DiagnosticBag _diagnostics = new DiagnosticBag();
-
         private readonly Dictionary<TypeSymbol, TypeReference> _knownTypes;
         private readonly MethodReference _consoleWriteLineReference;
+        private readonly MethodReference _consoleReadLineReference;
         private readonly AssemblyDefinition _assemblyDefinition;
         private readonly Dictionary<FunctionSymbol, MethodDefinition> _methods = new Dictionary<FunctionSymbol, MethodDefinition>();
+        private readonly Dictionary<VariableSymbol, VariableDefinition> _locals = new Dictionary<VariableSymbol, VariableDefinition>();
         private TypeDefinition _typeDefinition;
 
         public static ImmutableArray<Diagnostic> Emit(BoundProgram program, string moduleName, string[] references, string outputPath)
@@ -74,6 +75,8 @@ namespace Minsk.CodeAnalysis.Emit
         private void EmitFunctionBody(FunctionSymbol function, BoundBlockStatement body)
         {
             var method = _methods[function];
+            _locals.Clear();
+
             var ilProcessor = method.Body.GetILProcessor();
 
             foreach (var statement in body.Statements)
@@ -162,7 +165,8 @@ namespace Minsk.CodeAnalysis.Emit
 
         private void EmitVariableExpression(ILProcessor ilProcessor, BoundVariableExpression node)
         {
-            throw new NotImplementedException();
+            var variableDefinition = _locals[node.Variable];
+            ilProcessor.Emit(OpCodes.Ldloc, variableDefinition);
         }
 
         private void EmitUnaryExpression(ILProcessor ilProcessor, BoundUnaryExpression node)
@@ -209,13 +213,13 @@ namespace Minsk.CodeAnalysis.Emit
                 EmitExpression(ilProcessor, argument);
             }
 
-            if (node.Function == BuiltinFunctions.Print)
+            if (node.Function == BuiltinFunctions.Input)
+            {
+                ilProcessor.Emit(OpCodes.Call, _consoleReadLineReference);
+            }
+            else if (node.Function == BuiltinFunctions.Print)
             {
                 ilProcessor.Emit(OpCodes.Call, _consoleWriteLineReference);
-            }
-            else if (node.Function == BuiltinFunctions.Input)
-            {
-                throw new NotImplementedException();
             }
             else if (node.Function == BuiltinFunctions.Rnd)
             {
@@ -253,9 +257,15 @@ namespace Minsk.CodeAnalysis.Emit
             throw new NotImplementedException();
         }
 
-        private void EmitVariableDeclaration(ILProcessor ilProcessor, BoundVariableDeclaration statement)
+        private void EmitVariableDeclaration(ILProcessor ilProcessor, BoundVariableDeclaration node)
         {
-            throw new NotImplementedException();
+            var typeReference = _knownTypes[node.Variable.Type];
+            var variableDefinition = new VariableDefinition(typeReference);
+            _locals.Add(node.Variable, variableDefinition);
+            ilProcessor.Body.Variables.Add(variableDefinition);
+
+            EmitExpression(ilProcessor, node.Initializer);
+            ilProcessor.Emit(OpCodes.Stloc, variableDefinition);
         }
 
         private Emitter(string moduleName, string[] references)
@@ -369,6 +379,7 @@ namespace Minsk.CodeAnalysis.Emit
             }
 
             _consoleWriteLineReference = ResolveMethod("System.Console", "WriteLine", new[] { "System.String" });
+            _consoleReadLineReference = ResolveMethod("System.Console", "ReadLine", Array.Empty<string>());
         }
     }
 }
